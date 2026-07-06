@@ -14,7 +14,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/just-vile/ecommerceddd-gitops
-    path: platform/bootstrap/argocd-apps
+    path: bootstrap/argocd-apps
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc
