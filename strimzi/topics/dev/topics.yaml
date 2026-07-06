@@ -1,0 +1,141 @@
+---
+# Integration event topics — align with Kafka consumers in the .NET services
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: ecom-payments
+  namespace: data
+  labels:
+    strimzi.io/cluster: ecom-kafka-dev
+spec:
+  partitions: 3
+  replicas: 1
+  config:
+    retention.ms: "604800000"   # 7 days
+    cleanup.policy: delete
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: ecom-shipments
+  namespace: data
+  labels:
+    strimzi.io/cluster: ecom-kafka-dev
+spec:
+  partitions: 3
+  replicas: 1
+  config:
+    retention.ms: "604800000"
+    cleanup.policy: delete
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: ecom-orders
+  namespace: data
+  labels:
+    strimzi.io/cluster: ecom-kafka-dev
+spec:
+  partitions: 3
+  replicas: 1
+  config:
+    retention.ms: "604800000"
+    cleanup.policy: delete
+---
+# Debezium outbox routing topics (created dynamically by EventRouter, but pre-declare for partition control)
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: ecom-order
+  namespace: data
+  labels:
+    strimzi.io/cluster: ecom-kafka-dev
+spec:
+  partitions: 3
+  replicas: 1
+  config:
+    retention.ms: "604800000"
+    cleanup.policy: delete
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: ecom-payment
+  namespace: data
+  labels:
+    strimzi.io/cluster: ecom-kafka-dev
+spec:
+  partitions: 3
+  replicas: 1
+  config:
+    retention.ms: "604800000"
+    cleanup.policy: delete
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: ecom-shipment
+  namespace: data
+  labels:
+    strimzi.io/cluster: ecom-kafka-dev
+spec:
+  partitions: 3
+  replicas: 1
+  config:
+    retention.ms: "604800000"
+    cleanup.policy: delete
+---
+# Dead letter queue
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: ecom-dlq
+  namespace: data
+  labels:
+    strimzi.io/cluster: ecom-kafka-dev
+spec:
+  partitions: 1
+  replicas: 1
+  config:
+    retention.ms: "2592000000"   # 30 days
+    cleanup.policy: delete
+---
+# Kafka Connect internal topics
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: connect-offsets
+  namespace: data
+  labels:
+    strimzi.io/cluster: ecom-kafka-dev
+spec:
+  partitions: 25
+  replicas: 1
+  config:
+    cleanup.policy: compact
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: connect-configs
+  namespace: data
+  labels:
+    strimzi.io/cluster: ecom-kafka-dev
+spec:
+  partitions: 1
+  replicas: 1
+  config:
+    cleanup.policy: compact
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: connect-statuses
+  namespace: data
+  labels:
+    strimzi.io/cluster: ecom-kafka-dev
+spec:
+  partitions: 5
+  replicas: 1
+  config:
+    cleanup.policy: compact

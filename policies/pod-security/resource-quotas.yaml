@@ -1,0 +1,50 @@
+---
+# ResourceQuota for ecom-dev namespace
+# Prevents a runaway service from consuming all cluster resources on Minikube
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: ecom-dev-quota
+  namespace: ecom-dev
+spec:
+  hard:
+    requests.cpu: "4"
+    requests.memory: "4Gi"
+    limits.cpu: "8"
+    limits.memory: "8Gi"
+    pods: "50"
+    services: "20"
+    persistentvolumeclaims: "10"
+---
+# LimitRange: default requests/limits for pods that don't specify them
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: ecom-dev-limits
+  namespace: ecom-dev
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: 200m
+        memory: 256Mi
+      defaultRequest:
+        cpu: 50m
+        memory: 128Mi
+      max:
+        cpu: "1"
+        memory: 1Gi
+---
+# ResourceQuota for platform namespace
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: platform-quota
+  namespace: platform
+spec:
+  hard:
+    requests.cpu: "4"
+    requests.memory: "4Gi"
+    limits.cpu: "8"
+    limits.memory: "8Gi"
+    pods: "50"

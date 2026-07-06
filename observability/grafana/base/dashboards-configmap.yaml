@@ -1,0 +1,62 @@
+---
+# Starter Grafana dashboard — EcommerceDDD service overview
+# Mount as a ConfigMap so dashboards are version-controlled
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: platform
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/component: observability
+data:
+  ecommerceddd-overview.json: |
+    {
+      "title": "EcommerceDDD Overview",
+      "uid": "ecom-overview",
+      "schemaVersion": 38,
+      "version": 1,
+      "refresh": "30s",
+      "panels": [
+        {
+          "id": 1,
+          "title": "Request Rate (by service)",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "sum(rate(ecommerceddd_http_server_duration_seconds_count[5m])) by (service_name)",
+              "legendFormat": "{{service_name}}"
+            }
+          ],
+          "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 }
+        },
+        {
+          "id": 2,
+          "title": "Error Rate (5xx)",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "sum(rate(ecommerceddd_http_server_duration_seconds_count{http_status_code=~\"5..\"}[5m])) by (service_name)",
+              "legendFormat": "{{service_name}}"
+            }
+          ],
+          "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 }
+        },
+        {
+          "id": 3,
+          "title": "p95 Latency (ms)",
+          "type": "timeseries",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum(rate(ecommerceddd_http_server_duration_seconds_bucket[5m])) by (service_name, le)) * 1000",
+              "legendFormat": "{{service_name}}"
+            }
+          ],
+          "gridPos": { "x": 0, "y": 8, "w": 24, "h": 8 }
+        }
+      ]
+    }

@@ -1,0 +1,77 @@
+# Wave 3: Kafka cluster + KafkaConnect + Topics (dev)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-strimzi-kafka-dev
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: project-platform
+  source:
+    repoURL: https://github.com/just-vile/ecommerceddd-gitops
+    path: platform/strimzi/kafka/dev
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: data
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+---
+# Wave 4: Kafka topics
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-strimzi-topics-dev
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: project-platform
+  source:
+    repoURL: https://github.com/just-vile/ecommerceddd-gitops
+    path: platform/strimzi/topics/dev
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: data
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+---
+# Wave 4: KafkaConnect + Debezium connector
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-strimzi-connect-dev
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: project-platform
+  source:
+    repoURL: https://github.com/just-vile/ecommerceddd-gitops
+    path: platform/strimzi/connect/dev
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: data
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true

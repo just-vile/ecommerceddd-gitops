@@ -1,0 +1,94 @@
+---
+# ConfigMap holding the DB init SQL (matches scripts/db_init.sql in the source repo)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-init-sql
+  namespace: data
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+data:
+  db_init.sql: |
+    CREATE DATABASE identityserverdb;
+    CREATE DATABASE productsdb;
+    CREATE DATABASE inventorydb;
+    CREATE DATABASE customersdb;
+    CREATE DATABASE quotesdb;
+    CREATE DATABASE ordersdb;
+    CREATE DATABASE paymentsdb;
+    CREATE DATABASE shipmentsdb;
+---
+# Job: runs once after CNPG cluster is Ready to create all application databases
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ecom-db-init
+  namespace: data
+  labels:
+    app.kubernetes.io/name: ecom-db-init
+    app.kubernetes.io/component: database-bootstrap
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  ttlSecondsAfterFinished: 600
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ecom-db-init
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 70     # postgres uid in official image
+        runAsGroup: 70
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: db-init
+          image: postgres:18
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "Running DB initialisation..."
+              psql -v ON_ERROR_STOP=1 \
+                -h ecom-postgres-dev-rw.data.svc.cluster.local \
+                -U "$POSTGRES_USER" \
+                -f /scripts/db_init.sql
+              echo "DB initialisation complete."
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ecom-postgres-superuser
+                  key: username
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ecom-postgres-superuser
+                  key: password
+          volumeMounts:
+            - name: sql-scripts
+              mountPath: /scripts
+              readOnly: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: sql-scripts
+          configMap:
+            name: db-init-sql

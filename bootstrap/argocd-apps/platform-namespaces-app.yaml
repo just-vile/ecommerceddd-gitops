@@ -1,0 +1,25 @@
+# Wave 0: Namespaces first — everything else depends on them
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-namespaces
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: project-platform
+  source:
+    repoURL: https://github.com/just-vile/ecommerceddd-gitops
+    path: platform/bootstrap/namespaces
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: platform
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true

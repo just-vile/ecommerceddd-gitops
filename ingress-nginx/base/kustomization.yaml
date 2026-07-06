@@ -1,0 +1,33 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: platform
+
+helmCharts:
+  - name: ingress-nginx
+    repo: https://kubernetes.github.io/ingress-nginx
+    version: "4.12.1"
+    releaseName: ingress-nginx
+    namespace: platform
+    valuesInline:
+      controller:
+        kind: Deployment
+        replicaCount: 1
+        service:
+          type: NodePort          # Minikube: use NodePort; change to LoadBalancer for cloud
+        config:
+          use-forwarded-headers: "true"
+          proxy-body-size: "50m"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+        admissionWebhooks:
+          enabled: true
+        metrics:
+          enabled: true
+          serviceMonitor:
+            enabled: false    # enable when Prometheus operator is present

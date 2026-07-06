@@ -1,0 +1,60 @@
+---
+# KafkaConnect cluster with Debezium connector plugin
+# Mirrors debezium/connect:2.5 from docker-compose.infra.yml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: ecom-connect-dev
+  namespace: data
+  labels:
+    app.kubernetes.io/name: ecom-connect
+    app.kubernetes.io/component: cdc
+    environment: dev
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+    strimzi.io/use-connector-resources: "true"
+spec:
+  version: 3.9.0
+  replicas: 1
+  bootstrapServers: ecom-kafka-dev-kafka-bootstrap.data.svc.cluster.local:9092
+
+  # Debezium PostgreSQL connector plugin image
+  # Build a custom image containing the Debezium plugin, or use the pre-built one below.
+  # To use Strimzi's build mechanism, uncomment the 'build' section below.
+  # For dev convenience, use the pre-built Debezium image from Docker Hub.
+  image: quay.io/debezium/connect:2.7
+
+  config:
+    group.id: ecom-connect-cluster
+    offset.storage.topic: CONNECT_OFFSETS
+    config.storage.topic: CONNECT_CONFIGS
+    status.storage.topic: CONNECT_STATUSES
+    config.storage.replication.factor: 1
+    offset.storage.replication.factor: 1
+    status.storage.replication.factor: 1
+    # Offset flush interval — lower for dev to see changes faster
+    offset.flush.interval.ms: 10000
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  template:
+    pod:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+    connectContainer:
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: false   # Debezium writes temp files
+        capabilities:
+          drop:
+            - ALL
+
+  # Internal service: ecom-connect-dev-connect-api.data.svc.cluster.local:8083

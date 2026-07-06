@@ -1,0 +1,57 @@
+---
+# Debezium PostgreSQL connector — captures outbox table changes via logical replication
+# Maps to the manual Debezium setup from docker-compose.infra.yml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: ecom-outbox-connector
+  namespace: data
+  labels:
+    strimzi.io/cluster: ecom-connect-dev
+    app.kubernetes.io/name: ecom-outbox-connector
+    app.kubernetes.io/component: cdc
+    environment: dev
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  class: io.debezium.connector.postgresql.PostgresConnector
+  tasksMax: 1
+  config:
+    # Database connection — uses CNPG read-write service
+    database.hostname: ecom-postgres-dev-rw.data.svc.cluster.local
+    database.port: "5432"
+    database.dbname: ordersdb    # Primary DB for outbox; adjust if you use a shared outbox DB
+    database.user: "${file:/opt/kafka/external-configuration/connector-secret/username}"
+    database.password: "${file:/opt/kafka/external-configuration/connector-secret/password}"
+
+    # Logical replication slot + publication
+    database.server.name: ecom-postgres
+    slot.name: ecom_outbox_slot
+    publication.name: ecom_outbox_publication
+    publication.autocreate.mode: filtered
+
+    # Outbox event router transform
+    transforms: outbox
+    transforms.outbox.type: io.debezium.transforms.outbox.EventRouter
+    transforms.outbox.table.expand.json.payload: "true"
+    transforms.outbox.route.by.field: aggregatetype
+    transforms.outbox.route.topic.replacement: "ecom.${routedByValue}"
+
+    # Plugin — pgoutput is built into PostgreSQL 10+ (no extra extension needed)
+    plugin.name: pgoutput
+
+    # Snapshot mode — skip initial snapshot, capture only new changes
+    snapshot.mode: never
+
+    # Error handling
+    errors.tolerance: none
+    errors.deadletterqueue.topic.name: ecom.dlq
+    errors.deadletterqueue.topic.replication.factor: 1
+
+  # ExternalConfiguration for DB credentials (mounted from a Secret)
+  # Create the secret:
+  #   kubectl create secret generic connector-secret \
+  #     --from-literal=username=postgres \
+  #     --from-literal=password=CHANGE_ME \
+  #     -n data
+  #   kubeseal ... > connector-secret.yaml

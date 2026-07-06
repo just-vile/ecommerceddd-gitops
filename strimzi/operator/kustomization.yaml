@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: platform
+
+# Strimzi operator v0.45 — manages Kafka in KRaft mode
+# https://strimzi.io/downloads/
+resources:
+  - https://strimzi.io/install/latest?namespace=platform
+
+# Restrict operator to watch only the 'data' namespace
+# Override the STRIMZI_NAMESPACE env var in the operator Deployment
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/env/0/value
+        value: "data"
+    target:
+      kind: Deployment
+      name: strimzi-cluster-operator

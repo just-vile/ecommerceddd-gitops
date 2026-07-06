@@ -1,0 +1,25 @@
+# Wave 3: DB init job (run after CNPG cluster is Ready)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-cnpg-bootstrap-dev
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: project-platform
+  source:
+    repoURL: https://github.com/just-vile/ecommerceddd-gitops
+    path: platform/cnpg/bootstrap
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: data
+  syncPolicy:
+    automated:
+      prune: false   # never auto-prune completed Jobs
+      selfHeal: false
+    syncOptions:
+      - ServerSideApply=true

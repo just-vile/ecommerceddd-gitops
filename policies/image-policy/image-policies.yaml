@@ -1,0 +1,99 @@
+---
+# Kyverno ClusterPolicy: block images tagged with 'latest' in non-platform workloads
+# Install Kyverno separately: https://kyverno.io/docs/installation/
+# This policy is in audit mode initially — change validationFailureAction to Enforce after stabilization
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-latest-tag
+  annotations:
+    policies.kyverno.io/title: Disallow Latest Tag
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: >-
+      Requiring immutable image tags prevents unpredictable deployments.
+      This policy disallows container images using the 'latest' tag.
+spec:
+  validationFailureAction: Audit   # Change to Enforce after baseline is stable
+  background: true
+  rules:
+    - name: require-image-tag
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - ecom-dev
+      validate:
+        message: "Image tag 'latest' or missing tag is not allowed. Use immutable tags (e.g. sha-<git-sha>)."
+        pattern:
+          spec:
+            containers:
+              - image: "!*:latest & ?*:*"
+            initContainers:
+              - image: "!*:latest & ?*:*"
+---
+# Kyverno ClusterPolicy: require resource limits on all pods in ecom-dev
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-resource-limits
+  annotations:
+    policies.kyverno.io/title: Require Resource Limits
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/description: >-
+      Resource limits must be defined for all containers to prevent
+      resource exhaustion on the shared cluster.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: check-resource-limits
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - ecom-dev
+      validate:
+        message: "Resource limits (cpu and memory) are required for all containers."
+        pattern:
+          spec:
+            containers:
+              - resources:
+                  limits:
+                    cpu: "?*"
+                    memory: "?*"
+---
+# Kyverno ClusterPolicy: require liveness and readiness probes
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-probes
+  annotations:
+    policies.kyverno.io/title: Require Liveness and Readiness Probes
+    policies.kyverno.io/category: Best Practices
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: check-probes
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - ecom-dev
+      validate:
+        message: "Liveness and readiness probes are required."
+        pattern:
+          spec:
+            containers:
+              - livenessProbe:
+                  httpGet:
+                    path: "?*"
+                readinessProbe:
+                  httpGet:
+                    path: "?*"

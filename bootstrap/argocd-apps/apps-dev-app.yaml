@@ -1,0 +1,27 @@
+# Wave 2: App workloads for dev environment
+# Applied after platform is healthy (wave 3+ completes)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: apps-dev
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: project-apps
+  source:
+    repoURL: https://github.com/just-vile/ecommerceddd-gitops
+    path: apps/argocd/apps/dev
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ecom-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true

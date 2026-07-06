@@ -1,0 +1,25 @@
+# Wave 0: Argo CD project boundaries
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-projects
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default   # must use default to create other projects
+  source:
+    repoURL: https://github.com/just-vile/ecommerceddd-gitops
+    path: platform/projects
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true

@@ -1,0 +1,28 @@
+# Root App-of-Apps: bootstrapped ONCE manually with:
+#   kubectl apply -f platform/bootstrap/root-app/root-application.yaml
+# After this, Argo CD self-manages everything from Git.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/just-vile/ecommerceddd-gitops
+    path: platform/bootstrap/argocd-apps
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

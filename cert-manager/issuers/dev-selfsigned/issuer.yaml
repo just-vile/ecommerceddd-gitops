@@ -1,0 +1,37 @@
+---
+# ClusterIssuer: self-signed root CA for dev
+# Used to sign TLS certificates for all dev ingress routes
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+# CA Certificate (self-signed root)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ecom-dev-ca
+  namespace: ecom-dev
+spec:
+  isCA: true
+  commonName: ecom-dev-ca
+  secretName: ecom-dev-ca-secret
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+# Issuer backed by the CA above — used to sign service certs in ecom-dev
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ecom-dev-ca-issuer
+  namespace: ecom-dev
+spec:
+  ca:
+    secretName: ecom-dev-ca-secret

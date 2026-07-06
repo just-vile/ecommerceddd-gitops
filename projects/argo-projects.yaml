@@ -1,0 +1,76 @@
+---
+# project-platform: owns all cluster-level infra in platform and data namespaces
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: project-platform
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Platform infrastructure — ingress, cert-manager, sealed-secrets, cnpg, strimzi, observability
+  sourceRepos:
+    - https://github.com/just-vile/ecommerceddd-gitops
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: platform
+    - server: https://kubernetes.default.svc
+      namespace: data
+    - server: https://kubernetes.default.svc
+      namespace: ecom-dev    # for cert-manager issuers and sealed secrets
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+    - group: storage.k8s.io
+      kind: StorageClass
+    - group: networking.k8s.io
+      kind: IngressClass
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  roles:
+    - name: platform-admin
+      description: Full access to platform project
+      policies:
+        - p, proj:project-platform:platform-admin, applications, *, project-platform/*, allow
+      groups:
+        - platform-team
+
+---
+# project-apps: owns all EcommerceDDD application workloads
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: project-apps
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: EcommerceDDD application services — deployed to ecom-dev
+  sourceRepos:
+    - https://github.com/just-vile/ecommerceddd-gitops
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: ecom-dev
+  clusterResourceWhitelist: []  # no cluster-scoped resources allowed
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  roles:
+    - name: app-deployer
+      description: Deploy application services to ecom-dev
+      policies:
+        - p, proj:project-apps:app-deployer, applications, sync, project-apps/*, allow
+        - p, proj:project-apps:app-deployer, applications, get, project-apps/*, allow
+      groups:
+        - app-platform-team

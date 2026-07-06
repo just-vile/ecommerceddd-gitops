@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - platform-namespaces-app.yaml
+  - platform-projects-app.yaml
+  - platform-ingress-app.yaml
+  - platform-cert-manager-app.yaml
+  - platform-sealed-secrets-app.yaml
+  - platform-cnpg-operator-app.yaml
+  - platform-cnpg-clusters-app.yaml
+  - platform-strimzi-operator-app.yaml
+  - platform-strimzi-kafka-app.yaml
+  - platform-observability-app.yaml
+  - platform-policies-app.yaml
+  - apps-dev-app.yaml
