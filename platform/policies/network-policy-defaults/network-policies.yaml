@@ -29,41 +29,12 @@ spec:
         - port: 53
           protocol: TCP
 ---
-# Default-deny NetworkPolicy for data namespace
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: default-deny-all
-  namespace: data
-spec:
-  podSelector: {}
-  policyTypes:
-    - Ingress
-    - Egress
----
-# Allow DNS egress from all pods in data namespace
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-dns-egress
-  namespace: data
-spec:
-  podSelector: {}
-  policyTypes:
-    - Egress
-  egress:
-    - ports:
-        - port: 53
-          protocol: UDP
-        - port: 53
-          protocol: TCP
----
 # Allow ecom-dev → Postgres
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-ecom-dev-to-postgres
-  namespace: data
+  namespace: platform
 spec:
   podSelector:
     matchLabels:
@@ -84,11 +55,11 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-ecom-dev-to-kafka
-  namespace: data
+  namespace: platform
 spec:
   podSelector:
     matchLabels:
-      strimzi.io/cluster: ecom-kafka-dev
+      app.kubernetes.io/name: kafka
   policyTypes:
     - Ingress
   ingress:
@@ -105,7 +76,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-connect-to-postgres
-  namespace: data
+  namespace: platform
 spec:
   podSelector:
     matchLabels:
@@ -116,7 +87,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              strimzi.io/cluster: ecom-connect-dev
+              app.kubernetes.io/name: connect
       ports:
         - port: 5432
           protocol: TCP
@@ -150,11 +121,11 @@ spec:
         - port: 53
           protocol: TCP
 ---
-# Allow ecom-dev services to reach data namespace (Postgres + Kafka)
+# Allow ecom-dev services to reach platform data services (Postgres + Kafka + Connect)
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-egress-to-data
+  name: allow-egress-to-platform-data-services
   namespace: ecom-dev
 spec:
   podSelector: {}
@@ -164,11 +135,13 @@ spec:
     - to:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: data
+              kubernetes.io/metadata.name: platform
       ports:
         - port: 5432
           protocol: TCP
         - port: 9092
+          protocol: TCP
+        - port: 8083
           protocol: TCP
 ---
 # Allow ecom-dev services to reach OTel Collector in platform namespace

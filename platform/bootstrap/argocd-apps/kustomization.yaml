@@ -8,8 +8,9 @@ resources:
   - platform-postgres-app.yaml
   - platform-postgres-bootstrap-app.yaml
   - platform-pgadmin-app.yaml
-  - platform-strimzi-operator-app.yaml
-  - platform-strimzi-kafka-app.yaml
+  - platform-kafka-app.yaml
+  - platform-connect-app.yaml
+  - platform-kafka-bootstrap-app.yaml
   - platform-kafka-ui-app.yaml
   - platform-observability-app.yaml
   - platform-policies-app.yaml

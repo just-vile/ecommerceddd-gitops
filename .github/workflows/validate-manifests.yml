@@ -56,9 +56,9 @@ jobs:
           - platform/cert-manager/issuers/dev-selfsigned
           - platform/cnpg/clusters/dev
           - platform/cnpg/bootstrap
-          - platform/strimzi/kafka/dev
-          - platform/strimzi/connect/dev
-          - platform/strimzi/topics/dev
+          - platform/kafka/overlays/dev
+          - platform/connect/overlays/dev
+          - platform/kafka/bootstrap
           - platform/observability/otel-collector/overlays/dev
           - platform/observability/prometheus/overlays/dev
           - platform/observability/grafana/overlays/dev
@@ -85,9 +85,9 @@ jobs:
         overlay:
           - platform/cnpg/clusters/dev
           - platform/cnpg/bootstrap
-          - platform/strimzi/kafka/dev
-          - platform/strimzi/connect/dev
-          - platform/strimzi/topics/dev
+          - platform/kafka/overlays/dev
+          - platform/connect/overlays/dev
+          - platform/kafka/bootstrap
           - platform/observability/otel-collector/overlays/dev
           - platform/policies
           - platform/projects

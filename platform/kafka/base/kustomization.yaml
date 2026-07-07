@@ -4,5 +4,7 @@ kind: Kustomization
 namespace: platform
 
 resources:
-  - configmap-db-init-sql.yaml
-  - db-init-job.yaml
+  - configmap.yaml
+  - pvc.yaml
+  - service.yaml
+  - statefulset.yaml

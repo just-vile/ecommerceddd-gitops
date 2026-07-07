@@ -33,11 +33,11 @@ spec:
             - name: KAFKA_CLUSTERS_0_NAME
               value: ecom-kafka-dev
             - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
-              value: ecom-kafka-dev-kafka-bootstrap.data.svc.cluster.local:9092
+              value: kafka.platform.svc.cluster.local:9092
             - name: KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME
-              value: ecom-connect-dev
+              value: connect
             - name: KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS
-              value: http://ecom-connect-dev-connect-api.data.svc.cluster.local:8083
+              value: http://connect.platform.svc.cluster.local:8083
             - name: DYNAMIC_CONFIG_ENABLED
               value: "false"
           ports:

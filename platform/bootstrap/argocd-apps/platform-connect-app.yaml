@@ -1,18 +1,18 @@
-# Wave 2: Strimzi operator
+# Wave 4: Plain Kafka Connect deployment
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-strimzi-operator
+  name: platform-connect-dev
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "4"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: project-platform
   source:
     repoURL: https://github.com/just-vile/ecommerceddd-gitops
-    path: platform/strimzi/operator
+    path: platform/connect/overlays/dev
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc
@@ -23,4 +23,3 @@ spec:
       selfHeal: true
     syncOptions:
       - ServerSideApply=true
-      - RespectIgnoreDifferences=true

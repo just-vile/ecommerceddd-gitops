@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-topics-bootstrap
+  namespace: platform
+  labels:
+    app.kubernetes.io/name: kafka-topics-bootstrap
+    app.kubernetes.io/component: bootstrap
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  backoffLimit: 4
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kafka-topics-bootstrap
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: create-topics
+          image: confluentinc/cp-kafka:7.8.0
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              BOOTSTRAP_SERVER="kafka.platform.svc.cluster.local:9092"
+              until kafka-topics --bootstrap-server "$BOOTSTRAP_SERVER" --list >/dev/null 2>&1; do
+                echo "Waiting for Kafka broker at $BOOTSTRAP_SERVER..."
+                sleep 5
+              done
+              for topic in payments shipments orders; do
+                kafka-topics --bootstrap-server "$BOOTSTRAP_SERVER" \
+                  --create --if-not-exists --topic "$topic" \
+                  --partitions 1 --replication-factor 1
+              done

@@ -5,7 +5,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: ecom-db-init
-  namespace: data
+  namespace: platform
   labels:
     app.kubernetes.io/name: ecom-db-init
     app.kubernetes.io/component: database-bootstrap
@@ -36,7 +36,7 @@ spec:
             - /scripts/db_init.sh
           env:
             - name: PG_HOST
-              value: postgres.data.svc.cluster.local
+              value: postgres.platform.svc.cluster.local
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:

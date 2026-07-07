@@ -49,7 +49,8 @@ platform/                      # Cluster infrastructure (Argo CD project: projec
   cert-manager/                # cert-manager + self-signed issuers for dev
   sealed-secrets/              # Sealed Secrets controller
   cnpg/                        # CloudNativePG operator + Postgres cluster + DB init job
-  strimzi/                     # Strimzi operator + Kafka + KafkaConnect + Topics
+  kafka/                       # Plain Kafka (single-node KRaft) + topic bootstrap job
+  connect/                     # Plain Kafka Connect deployment
   observability/               # OTel Collector, Prometheus (kube-prometheus-stack), Grafana
   policies/                    # NetworkPolicies, ResourceQuotas, image policies (Kyverno)
 
@@ -75,16 +76,16 @@ scripts/
 | Namespace | Purpose | Pod Security |
 |---|---|---|
 | `platform` | Argo CD, ingress-nginx, cert-manager, sealed-secrets, observability | baseline |
-| `data` | Postgres (CNPG), Kafka (Strimzi), Debezium Connect | baseline |
+| `data` | Postgres (CNPG), Kafka (plain manifests), Debezium Connect | baseline |
 | `ecom-dev` | All EcommerceDDD application services | restricted |
 
 ## Service DNS (within cluster)
 
 | Resource | Address |
 |---|---|
-| Postgres (read-write) | `ecom-postgres-dev-rw.data.svc.cluster.local:5432` |
-| Kafka bootstrap | `ecom-kafka-dev-kafka-bootstrap.data.svc.cluster.local:9092` |
-| Debezium Connect | `ecom-connect-dev-connect-api.data.svc.cluster.local:8083` |
+| Postgres (read-write) | `postgres.platform.svc.cluster.local:5432` |
+| Kafka bootstrap | `kafka.platform.svc.cluster.local:9092` |
+| Debezium Connect | `connect.platform.svc.cluster.local:8083` |
 | OTel Collector (gRPC) | `otel-collector.platform.svc.cluster.local:4317` |
 | OTel Collector (HTTP) | `otel-collector.platform.svc.cluster.local:4318` |
 
@@ -129,9 +130,9 @@ Sealed secrets live in `apps/environments/dev/secrets/`.
 |---|---|
 | 0 | Namespaces, Argo CD Projects |
 | 1 | ingress-nginx, cert-manager, sealed-secrets |
-| 2 | CNPG operator, Strimzi operator, Apps aggregator |
-| 3 | CNPG cluster, Kafka cluster, KafkaConnect |
-| 4 | Kafka topics, OTel Collector, Prometheus, Grafana |
+| 2 | CNPG operator, Apps aggregator |
+| 3 | CNPG cluster, Kafka cluster |
+| 4 | KafkaConnect, Kafka topic bootstrap, OTel Collector, Prometheus, Grafana |
 | 5 | Policies |
 
 ---
@@ -151,6 +152,6 @@ Sealed secrets live in `apps/environments/dev/secrets/`.
 See [docs/runbooks/](docs/runbooks/) for:
 - Platform bootstrap and recovery
 - Postgres (CNPG) restore
-- Kafka (Strimzi) recovery
+- Kafka/Connect recovery
 - Secret rotation
 - Rollback via `git revert`

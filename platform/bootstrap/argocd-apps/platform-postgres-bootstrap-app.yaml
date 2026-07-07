@@ -16,7 +16,7 @@ spec:
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc
-    namespace: data
+    namespace: platform
   syncPolicy:
     automated:
       prune: false   # never auto-prune completed Jobs

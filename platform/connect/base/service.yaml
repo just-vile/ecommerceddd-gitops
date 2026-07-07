@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: connect
+  namespace: platform
+  labels:
+    app.kubernetes.io/name: connect
+    app.kubernetes.io/component: cdc
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: connect
+  ports:
+    - name: http
+      port: 8083
+      targetPort: http
+      protocol: TCP

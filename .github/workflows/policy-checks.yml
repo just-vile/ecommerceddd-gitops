@@ -34,8 +34,9 @@ jobs:
           mkdir -p /tmp/rendered
           for overlay in \
             platform/cnpg/clusters/dev \
-            platform/strimzi/kafka/dev \
-            platform/strimzi/connect/dev \
+            platform/kafka/overlays/dev \
+            platform/connect/overlays/dev \
+            platform/kafka/bootstrap \
             platform/observability/otel-collector/overlays/dev \
             platform/policies; do
             kustomize build "$overlay" >> /tmp/rendered/all.yaml
@@ -76,8 +77,8 @@ jobs:
         run: |
           MISSING=$(grep -rL 'argocd.argoproj.io/sync-wave' \
             platform/cnpg/clusters/ \
-            platform/strimzi/kafka/ \
-            platform/strimzi/connect/ \
+            platform/kafka/base/ \
+            platform/connect/base/ \
             2>/dev/null || true)
           if [ -n "$MISSING" ]; then
             echo "WARNING: sync-wave annotation missing in:"

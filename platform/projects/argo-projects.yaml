@@ -1,5 +1,4 @@
----
-# project-platform: owns all cluster-level infra in platform and data namespaces
+# project-platform: owns all cluster-level infra in platform namespace
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
@@ -8,14 +7,12 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  description: Platform infrastructure — ingress, cnpg, strimzi, observability
+  description: Platform infrastructure — ingress, cnpg, kafka, connect, observability
   sourceRepos:
     - https://github.com/just-vile/ecommerceddd-gitops
   destinations:
     - server: https://kubernetes.default.svc
       namespace: platform
-    - server: https://kubernetes.default.svc
-      namespace: data
     - server: https://kubernetes.default.svc
       namespace: ecom-dev    # for dev-scoped shared resources when needed
   clusterResourceWhitelist:
