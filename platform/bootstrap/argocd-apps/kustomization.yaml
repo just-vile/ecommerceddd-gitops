@@ -5,7 +5,6 @@ resources:
   - platform-namespaces-app.yaml
   - platform-projects-app.yaml
   - platform-ingress-app.yaml
-  - platform-cert-manager-app.yaml
   - platform-sealed-secrets-app.yaml
   - platform-cnpg-operator-app.yaml
   - platform-cnpg-clusters-app.yaml
