@@ -1,0 +1,22 @@
+---
+# Ingress for Grafana access
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: grafana.dev.ecommerceddd.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 80

@@ -1,0 +1,22 @@
+---
+# Ingress for Prometheus access
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prometheus
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: prometheus.dev.ecommerceddd.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus-kube-prometheus-prometheus
+                port:
+                  number: 9090
