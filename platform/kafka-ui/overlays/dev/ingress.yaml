@@ -1,25 +1,25 @@
 ---
-# Ingress for pgAdmin access
+# Ingress for Kafka UI access
 # For Minikube: add entry to /etc/hosts or use `minikube ip`
-# Example: 192.168.99.100 pgadmin.local (then http://pgadmin.local)
+# Example: 192.168.99.100 kafka-ui.local (then http://kafka-ui.local)
 # Or access via: http://<minikube-ip>
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: pgadmin
+  name: kafka-ui
   namespace: platform
   annotations:
-    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-wave: "4"
 spec:
   ingressClassName: nginx
   rules:
-    - host: pgadmin.dev.ecommerceddd.local
+    - host: kafka-ui.dev.ecommerceddd.local
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: pgadmin
+                name: kafka-ui
                 port:
-                  number: 80
+                  number: 8080

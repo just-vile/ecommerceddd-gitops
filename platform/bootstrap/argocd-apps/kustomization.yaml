@@ -10,6 +10,7 @@ resources:
   - platform-pgadmin-app.yaml
   - platform-strimzi-operator-app.yaml
   - platform-strimzi-kafka-app.yaml
+  - platform-kafka-ui-app.yaml
   - platform-observability-app.yaml
   - platform-policies-app.yaml
   - apps-dev-app.yaml
