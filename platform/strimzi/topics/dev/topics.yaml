@@ -105,44 +105,5 @@ spec:
   config:
     retention.ms: "2592000000"   # 30 days
     cleanup.policy: delete
-    cleanup.policy: delete
----
-# Kafka Connect internal topics
-apiVersion: kafka.strimzi.io/v1beta2
-kind: KafkaTopic
-metadata:
-  name: connect-offsets
-  namespace: data
-  labels:
-    strimzi.io/cluster: ecom-kafka-dev
-spec:
-  partitions: 25
-  replicas: 1
-  config:
-    cleanup.policy: compact
----
-apiVersion: kafka.strimzi.io/v1beta2
-kind: KafkaTopic
-metadata:
-  name: connect-configs
-  namespace: data
-  labels:
-    strimzi.io/cluster: ecom-kafka-dev
-spec:
-  partitions: 1
-  replicas: 1
-  config:
-    cleanup.policy: compact
----
-apiVersion: kafka.strimzi.io/v1beta2
-kind: KafkaTopic
-metadata:
-  name: connect-statuses
-  namespace: data
-  labels:
-    strimzi.io/cluster: ecom-kafka-dev
-spec:
-  partitions: 5
-  replicas: 1
-  config:
-    cleanup.policy: compact
+ 
+ 
