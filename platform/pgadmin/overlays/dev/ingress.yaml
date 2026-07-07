@@ -1,0 +1,27 @@
+---
+# Ingress for pgAdmin access
+# For Minikube: add entry to /etc/hosts or use `minikube ip`
+# Example: 192.168.99.100 pgadmin.local (then http://pgadmin.local)
+# Or access via: http://<minikube-ip>
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pgadmin
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: pgadmin.dev.ecommercedd.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pgadmin
+                port:
+                  number: 8080
+ 
+ 
