@@ -5,4 +5,4 @@ namespace: platform
 
 resources:
   - ../../base
-  - dashboards-configmap.yaml
+  # - dashboards-configmap.yaml
