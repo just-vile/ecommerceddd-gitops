@@ -26,6 +26,7 @@ metadata:
     app.kubernetes.io/component: broker
 spec:
   clusterIP: None
+  publishNotReadyAddresses: true
   selector:
     app.kubernetes.io/name: kafka
   ports:
