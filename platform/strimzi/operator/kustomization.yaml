@@ -22,3 +22,15 @@ patches:
     target:
       kind: ConfigMap
       name: strimzi-cluster-operator
+  - patch: |-
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: strimzi-cluster-operator-leader-election
+      subjects:
+        - kind: ServiceAccount
+          name: strimzi-cluster-operator
+          namespace: platform
+    target:
+      kind: RoleBinding
+      name: strimzi-cluster-operator-leader-election
