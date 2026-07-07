@@ -1,13 +1,15 @@
 ---
-# Integration event topics — align with Kafka consumers in the .NET services
+# Integration event topics consumed by .NET services (KafkaConsumer__Topics: ["payments","shipments","orders"])
+# spec.topicName sets the actual Kafka topic name; metadata.name is the K8s resource name.
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
-  name: ecom-payments
+  name: ecom-payments-dev
   namespace: data
   labels:
     strimzi.io/cluster: ecom-kafka-dev
 spec:
+  topicName: payments   # matches KafkaConsumer.Topics in OrderProcessing appsettings.json
   partitions: 3
   replicas: 1
   config:
@@ -17,11 +19,12 @@ spec:
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
-  name: ecom-shipments
+  name: ecom-shipments-dev
   namespace: data
   labels:
     strimzi.io/cluster: ecom-kafka-dev
 spec:
+  topicName: shipments   # matches KafkaConsumer.Topics in OrderProcessing appsettings.json
   partitions: 3
   replicas: 1
   config:
@@ -31,61 +34,63 @@ spec:
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
-  name: ecom-orders
+  name: ecom-orders-dev
   namespace: data
   labels:
     strimzi.io/cluster: ecom-kafka-dev
 spec:
+  topicName: orders   # matches KafkaConsumer.Topics in OrderProcessing appsettings.json
   partitions: 3
   replicas: 1
   config:
     retention.ms: "604800000"
     cleanup.policy: delete
 ---
-# Debezium outbox routing topics (created dynamically by EventRouter, but pre-declare for partition control)
+# Kafka Connect internal topics — must be pre-declared because auto.create.topics.enable: false.
+# These are referenced in the KafkaConnect config (offset.storage.topic, config.storage.topic, status.storage.topic).
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
-  name: ecom-order
+  name: connect-configs
   namespace: data
   labels:
     strimzi.io/cluster: ecom-kafka-dev
 spec:
-  partitions: 3
+  topicName: CONNECT_CONFIGS
+  partitions: 1
   replicas: 1
   config:
-    retention.ms: "604800000"
-    cleanup.policy: delete
----
-apiVersion: kafka.strimzi.io/v1beta2
-kind: KafkaTopic
-metadata:
-  name: ecom-payment
-  namespace: data
-  labels:
-    strimzi.io/cluster: ecom-kafka-dev
-spec:
-  partitions: 3
-  replicas: 1
-  config:
-    retention.ms: "604800000"
-    cleanup.policy: delete
+    cleanup.policy: compact
 ---
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
-  name: ecom-shipment
+  name: connect-offsets
   namespace: data
   labels:
     strimzi.io/cluster: ecom-kafka-dev
 spec:
-  partitions: 3
+  topicName: CONNECT_OFFSETS
+  partitions: 25
   replicas: 1
   config:
-    retention.ms: "604800000"
-    cleanup.policy: delete
+    cleanup.policy: compact
 ---
-# Dead letter queue
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: connect-statuses
+  namespace: data
+  labels:
+    strimzi.io/cluster: ecom-kafka-dev
+spec:
+  topicName: CONNECT_STATUSES
+  partitions: 5
+  replicas: 1
+  config:
+    cleanup.policy: compact
+---
+# Dead letter queue for connector errors
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
@@ -94,10 +99,12 @@ metadata:
   labels:
     strimzi.io/cluster: ecom-kafka-dev
 spec:
+  topicName: ecom.dlq
   partitions: 1
   replicas: 1
   config:
     retention.ms: "2592000000"   # 30 days
+    cleanup.policy: delete
     cleanup.policy: delete
 ---
 # Kafka Connect internal topics

@@ -8,7 +8,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  description: Platform infrastructure — ingress, sealed-secrets, cnpg, strimzi, observability
+  description: Platform infrastructure — ingress, cnpg, strimzi, observability
   sourceRepos:
     - https://github.com/just-vile/ecommerceddd-gitops
   destinations:
@@ -17,7 +17,7 @@ spec:
     - server: https://kubernetes.default.svc
       namespace: data
     - server: https://kubernetes.default.svc
-      namespace: ecom-dev
+      namespace: ecom-dev    # for dev-scoped shared resources when needed
   clusterResourceWhitelist:
     - group: ""
       kind: Namespace

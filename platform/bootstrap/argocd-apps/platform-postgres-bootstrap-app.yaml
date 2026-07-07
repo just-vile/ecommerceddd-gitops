@@ -1,0 +1,25 @@
+# Wave 2: DB bootstrap Job — runs after PostgreSQL StatefulSet is healthy
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-postgres-bootstrap-dev
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: project-platform
+  source:
+    repoURL: https://github.com/just-vile/ecommerceddd-gitops
+    path: platform/postgres/bootstrap
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: data
+  syncPolicy:
+    automated:
+      prune: false   # never auto-prune completed Jobs
+      selfHeal: false
+    syncOptions:
+      - ServerSideApply=true

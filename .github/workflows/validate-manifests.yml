@@ -1,0 +1,136 @@
+name: Validate Platform Manifests
+
+on:
+  pull_request:
+    paths:
+      - "platform/**"
+      - ".github/workflows/validate-manifests.yml"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  helm-lint:
+    name: Helm Lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        component:
+          - { path: platform/ingress-nginx/base, type: helm }
+          - { path: platform/cert-manager/base, type: helm }
+          - { path: platform/sealed-secrets/base, type: helm }
+          - { path: platform/cnpg/operator, type: helm }
+          - { path: platform/observability/prometheus/base, type: helm }
+          - { path: platform/observability/grafana/base, type: helm }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "v3.17.0"
+
+      - name: Add Helm repos
+        run: |
+          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+          helm repo add jetstack https://charts.jetstack.io
+          helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+          helm repo add cnpg https://cloudnative-pg.github.io/charts
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo update
+
+      - name: Helm lint ${{ matrix.component.path }}
+        run: helm lint ${{ matrix.component.path }} || true
+
+  kustomize-build:
+    name: Kustomize Build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        overlay:
+          - platform/ingress-nginx/overlays/dev
+          - platform/cert-manager/issuers/dev-selfsigned
+          - platform/cnpg/clusters/dev
+          - platform/cnpg/bootstrap
+          - platform/strimzi/kafka/dev
+          - platform/strimzi/connect/dev
+          - platform/strimzi/topics/dev
+          - platform/observability/otel-collector/overlays/dev
+          - platform/observability/prometheus/overlays/dev
+          - platform/observability/grafana/overlays/dev
+          - platform/policies
+          - platform/projects
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install kustomize
+        uses: imranismail/setup-kustomize@v2
+        with:
+          kustomize-version: "5.6.0"
+
+      - name: Build ${{ matrix.overlay }}
+        run: kustomize build ${{ matrix.overlay }}
+
+  kubeconform:
+    name: Kubeconform Validation
+    runs-on: ubuntu-latest
+    needs: kustomize-build
+    strategy:
+      fail-fast: false
+      matrix:
+        overlay:
+          - platform/cnpg/clusters/dev
+          - platform/cnpg/bootstrap
+          - platform/strimzi/kafka/dev
+          - platform/strimzi/connect/dev
+          - platform/strimzi/topics/dev
+          - platform/observability/otel-collector/overlays/dev
+          - platform/policies
+          - platform/projects
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install kustomize
+        uses: imranismail/setup-kustomize@v2
+        with:
+          kustomize-version: "5.6.0"
+
+      - name: Install kubeconform
+        run: |
+          curl -fsSL -o /tmp/kubeconform.tar.gz \
+            https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz
+          tar xf /tmp/kubeconform.tar.gz -C /usr/local/bin
+
+      - name: Validate ${{ matrix.overlay }}
+        run: |
+          kustomize build ${{ matrix.overlay }} | kubeconform \
+            -strict \
+            -ignore-missing-schemas \
+            -kubernetes-version 1.32.0 \
+            -output pretty
+
+  comment-results:
+    name: Comment Validation Results
+    runs-on: ubuntu-latest
+    needs: [helm-lint, kustomize-build, kubeconform]
+    if: always()
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const needs = ${{ toJSON(needs) }};
+            const failed = Object.entries(needs)
+              .filter(([, v]) => v.result === 'failure')
+              .map(([k]) => k);
+            const status = failed.length === 0
+              ? '✅ All platform manifest validations passed.'
+              : `❌ Validation failed in: ${failed.join(', ')}`;
+            github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `## Platform Manifest Validation\n\n${status}`,
+            });

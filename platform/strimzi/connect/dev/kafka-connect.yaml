@@ -43,6 +43,18 @@ spec:
       cpu: 500m
       memory: 512Mi
 
+  # Mount DB credentials for the KafkaConnector CRs.
+  # Create the secret out-of-band before syncing:
+  #   kubectl create secret generic kafka-connector-credentials \
+  #     --from-literal=username=postgres \
+  #     --from-literal=password=<POSTGRES_PASSWORD> \
+  #     -n data
+  externalConfiguration:
+    volumes:
+      - name: connector-secret
+        secret:
+          secretName: kafka-connector-credentials
+
   template:
     pod:
       securityContext:
@@ -57,4 +69,8 @@ spec:
           drop:
             - ALL
 
-  # Internal service: ecom-connect-dev-connect-api.data.svc.cluster.local:8083
+  # Internal REST service: ecom-connect-dev-connect-api.data.svc.cluster.local:8083
+  # .NET DebeziumSettings__ConnectorUrl (per service):
+  #   http://ecom-connect-dev-connect-api.data.svc.cluster.local:8083/connectors/orders-connector
+  #   http://ecom-connect-dev-connect-api.data.svc.cluster.local:8083/connectors/payments-connector
+  #   http://ecom-connect-dev-connect-api.data.svc.cluster.local:8083/connectors/shipments-connector

@@ -1,0 +1,87 @@
+---
+# Postgres superuser credentials — pre-create this secret before bootstrap.
+# Do not commit real credentials to Git.
+# kubectl create secret generic ecom-postgres-superuser \
+#   --namespace data --from-literal=username=postgres --from-literal=password=CHANGE_ME
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: data
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/component: database
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: postgres
+        app.kubernetes.io/component: database
+    spec:
+      securityContext:
+        fsGroup: 999  # postgres gid in official image
+      containers:
+        - name: postgres
+          image: postgres:18
+          # Mirrors docker-compose logical replication flags
+          args:
+            - "-c"
+            - "wal_level=logical"
+            - "-c"
+            - "max_wal_senders=5"
+            - "-c"
+            - "max_replication_slots=5"
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ecom-postgres-superuser
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ecom-postgres-superuser
+                  key: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "postgres"]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "postgres"]
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 3
+          resources: {}  # patched by overlay
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: standard   # Minikube default; override via patch-storage for other envs
+        resources:
+          requests:
+            storage: 5Gi             # patched by overlay

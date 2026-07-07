@@ -1,8 +1,8 @@
-# Wave 3: DB init job (run after CNPG cluster is Ready)
+# Wave 3: pgAdmin — operational UI for PostgreSQL (dev only)
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-cnpg-bootstrap-dev
+  name: platform-pgadmin-dev
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "3"
@@ -12,14 +12,14 @@ spec:
   project: project-platform
   source:
     repoURL: https://github.com/just-vile/ecommerceddd-gitops
-    path: platform/cnpg/bootstrap
+    path: platform/pgadmin/overlays/dev
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc
-    namespace: data
+    namespace: platform
   syncPolicy:
     automated:
-      prune: false   # never auto-prune completed Jobs
-      selfHeal: false
+      prune: true
+      selfHeal: true
     syncOptions:
       - ServerSideApply=true

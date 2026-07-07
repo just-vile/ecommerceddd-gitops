@@ -1,0 +1,20 @@
+---
+# ClusterIP Service for pgAdmin
+# Access via: kubectl port-forward -n platform svc/pgadmin 8080:80
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgadmin
+  namespace: platform
+  labels:
+    app.kubernetes.io/name: pgadmin
+    app.kubernetes.io/component: database-ui
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: pgadmin
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

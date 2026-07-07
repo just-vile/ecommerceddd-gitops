@@ -12,7 +12,7 @@ helmCharts:
     valuesInline:
       replicas: 1
       adminUser: admin
-      # adminPassword: set via SealedSecret — do not put plaintext here
+      # adminPassword: set via a pre-created Secret — do not put plaintext here
       admin:
         existingSecret: grafana-admin-secret
         userKey: username

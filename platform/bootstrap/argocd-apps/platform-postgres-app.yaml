@@ -1,8 +1,8 @@
-# Wave 1: Sealed Secrets controller
+# Wave 1: PostgreSQL StatefulSet + Service (vanilla, no operator required)
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-sealed-secrets
+  name: platform-postgres-dev
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "1"
@@ -12,11 +12,11 @@ spec:
   project: project-platform
   source:
     repoURL: https://github.com/just-vile/ecommerceddd-gitops
-    path: platform/sealed-secrets/base
+    path: platform/postgres/overlays/dev
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc
-    namespace: platform
+    namespace: data
   syncPolicy:
     automated:
       prune: true

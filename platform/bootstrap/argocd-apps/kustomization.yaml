@@ -5,9 +5,9 @@ resources:
   - platform-namespaces-app.yaml
   - platform-projects-app.yaml
   - platform-ingress-app.yaml
-  - platform-sealed-secrets-app.yaml
-  - platform-cnpg-operator-app.yaml
-  - platform-cnpg-clusters-app.yaml
+  - platform-postgres-app.yaml
+  - platform-postgres-bootstrap-app.yaml
+  - platform-pgadmin-app.yaml
   - platform-strimzi-operator-app.yaml
   - platform-strimzi-kafka-app.yaml
   - platform-observability-app.yaml

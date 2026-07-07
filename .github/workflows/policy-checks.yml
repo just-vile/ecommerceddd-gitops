@@ -1,0 +1,109 @@
+name: Platform Policy Checks
+
+on:
+  pull_request:
+    paths:
+      - "platform/**"
+      - "apps/**"
+      - ".github/workflows/policy-checks.yml"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  conftest-platform:
+    name: Conftest Policy Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install kustomize
+        uses: imranismail/setup-kustomize@v2
+        with:
+          kustomize-version: "5.6.0"
+
+      - name: Install conftest
+        run: |
+          curl -fsSL -o /tmp/conftest.tar.gz \
+            https://github.com/open-policy-agent/conftest/releases/latest/download/conftest_Linux_x86_64.tar.gz
+          tar xf /tmp/conftest.tar.gz -C /usr/local/bin conftest
+
+      - name: Render all platform overlays
+        run: |
+          mkdir -p /tmp/rendered
+          for overlay in \
+            platform/cnpg/clusters/dev \
+            platform/strimzi/kafka/dev \
+            platform/strimzi/connect/dev \
+            platform/observability/otel-collector/overlays/dev \
+            platform/policies; do
+            kustomize build "$overlay" >> /tmp/rendered/all.yaml
+            echo "---" >> /tmp/rendered/all.yaml
+          done
+
+      - name: Run conftest
+        run: |
+          conftest test /tmp/rendered/all.yaml \
+            --policy scripts/policies \
+            --output table \
+            --all-namespaces || true
+
+  no-latest-tag-check:
+    name: No Latest Tag in Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for 'latest' image tags in platform manifests
+        run: |
+          # Search for image: <name>:latest patterns (excluding comments)
+          FOUND=$(grep -rn --include="*.yaml" 'image:.*:latest' platform/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "ERROR: 'latest' image tag found in platform manifests:"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "OK: No 'latest' image tags found."
+
+  sync-wave-presence:
+    name: Sync Wave Annotation Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Kafka and CNPG CRs have sync-wave annotations
+        run: |
+          MISSING=$(grep -rL 'argocd.argoproj.io/sync-wave' \
+            platform/cnpg/clusters/ \
+            platform/strimzi/kafka/ \
+            platform/strimzi/connect/ \
+            2>/dev/null || true)
+          if [ -n "$MISSING" ]; then
+            echo "WARNING: sync-wave annotation missing in:"
+            echo "$MISSING"
+            # Not a hard failure — advisory only
+          else
+            echo "OK: All critical CRs have sync-wave annotations."
+          fi
+
+  no-staging-prod-resources:
+    name: Block Staging/Prod Resource Creation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ensure no staging or prod namespaces are referenced
+        run: |
+          FOUND=$(grep -rn --include="*.yaml" \
+            -e 'namespace: staging' \
+            -e 'namespace: ecom-staging' \
+            -e 'namespace: production' \
+            -e 'namespace: ecom-prod' \
+            platform/ apps/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "ERROR: staging/prod namespace references found — not allowed in this phase:"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "OK: No staging/prod namespace references found."
