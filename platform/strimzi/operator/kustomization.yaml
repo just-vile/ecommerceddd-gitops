@@ -1,30 +1,24 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
+ 
 namespace: platform
-
+ 
 # Strimzi operator — manages Kafka in KRaft mode via KafkaNodePool CRs
 # Pin to a specific release to avoid unintended upgrades.
 # Check latest: https://github.com/strimzi/strimzi-kafka-operator/releases
 resources:
   - https://github.com/strimzi/strimzi-kafka-operator/releases/download/0.45.0/strimzi-cluster-operator-0.45.0.yaml
-
+ 
 # Restrict operator to watch only the 'data' namespace.
-# Uses a strategic merge patch keyed on the env var name so the index doesn't matter.
+# Patch the operator ConfigMap instead of Deployment env to avoid value/valueFrom conflicts.
 patches:
   - patch: |-
-      apiVersion: apps/v1
-      kind: Deployment
+      apiVersion: v1
+      kind: ConfigMap
       metadata:
         name: strimzi-cluster-operator
-      spec:
-        template:
-          spec:
-            containers:
-              - name: strimzi-cluster-operator
-                env:
-                  - name: STRIMZI_NAMESPACE
-                    value: "data"
+      data:
+        STRIMZI_NAMESPACE: data
     target:
-      kind: Deployment
+      kind: ConfigMap
       name: strimzi-cluster-operator
