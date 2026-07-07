@@ -6,3 +6,4 @@ namespace: data
 resources:
   - statefulset.yaml
   - service.yaml
+  - secret.yaml
