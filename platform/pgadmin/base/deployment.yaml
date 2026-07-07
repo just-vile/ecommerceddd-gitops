@@ -64,13 +64,6 @@ spec:
               port: http
             initialDelaySeconds: 30
             periodSeconds: 30
-          resources:
-            requests:
-              cpu: 50m
-              memory: 128Mi
-            limits:
-              cpu: 200m
-              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
