@@ -13,7 +13,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: pgadmin.dev.ecommercedd.local
+    - host: pgadmin.dev.ecommerceddd.local
       http:
         paths:
           - path: /
