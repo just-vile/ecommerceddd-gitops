@@ -2630,7 +2630,7 @@ prometheusOperator:
   ## Liveness probe for the prometheusOperator deployment
   ##
   livenessProbe:
-    enabled: true
+    enabled: false
     failureThreshold: 3
     initialDelaySeconds: 0
     periodSeconds: 10
@@ -2639,7 +2639,7 @@ prometheusOperator:
   ## Readiness probe for the prometheusOperator deployment
   ##
   readinessProbe:
-    enabled: true
+    enabled: false
     failureThreshold: 3
     initialDelaySeconds: 0
     periodSeconds: 10
