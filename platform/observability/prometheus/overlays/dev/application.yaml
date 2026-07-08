@@ -19,6 +19,14 @@ spec:
       skipCrds: false
       values: |-
         prometheus:
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            hosts:
+              - prometheus.dev.ecommerceddd.local
+            paths:
+              - /
+            pathType: Prefix
           prometheusSpec:
             additionalScrapeConfigs: |
               - job_name: 'argocd'
@@ -47,6 +55,8 @@ spec:
             ingressClassName: nginx
             hosts:
               - grafana.dev.ecommerceddd.local
+            path: /
+            pathType: Prefix
         alertmanager:
           enabled: true
         nodeExporter:
@@ -59,3 +69,5 @@ spec:
     syncOptions:
       - CreateNamespace=false
       - ServerSideApply=true
+ 
+ 
