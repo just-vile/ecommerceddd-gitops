@@ -10,6 +10,8 @@ spec:
   description: Platform infrastructure — ingress, cnpg, kafka, connect, observability
   sourceRepos:
     - https://github.com/just-vile/ecommerceddd-gitops
+    - https://prometheus-community.github.io/helm-charts
+    - https://github.com/prometheus-community/helm-charts.git
   destinations:
     - server: https://kubernetes.default.svc
       namespace: platform
