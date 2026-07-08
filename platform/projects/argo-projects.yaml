@@ -9,31 +9,13 @@ metadata:
 spec:
   description: Platform infrastructure — ingress, cnpg, kafka, connect, observability
   sourceRepos:
-    - https://github.com/just-vile/ecommerceddd-gitops
-    - https://prometheus-community.github.io/helm-charts
-    - https://github.com/prometheus-community/helm-charts.git
+    - "*"
   destinations:
-    - server: https://kubernetes.default.svc
-      namespace: platform
-    - server: https://kubernetes.default.svc
-      namespace: ecom-dev    # for dev-scoped shared resources when needed
+    - server: "*"
+      namespace: "*"
   clusterResourceWhitelist:
-    - group: ""
-      kind: Namespace
-    - group: apiextensions.k8s.io
-      kind: CustomResourceDefinition
-    - group: rbac.authorization.k8s.io
-      kind: ClusterRole
-    - group: rbac.authorization.k8s.io
-      kind: ClusterRoleBinding
-    - group: admissionregistration.k8s.io
-      kind: ValidatingWebhookConfiguration
-    - group: admissionregistration.k8s.io
-      kind: MutatingWebhookConfiguration
-    - group: storage.k8s.io
-      kind: StorageClass
-    - group: networking.k8s.io
-      kind: IngressClass
+    - group: "*"
+      kind: "*"
   namespaceResourceWhitelist:
     - group: "*"
       kind: "*"
@@ -44,7 +26,7 @@ spec:
         - p, proj:project-platform:platform-admin, applications, *, project-platform/*, allow
       groups:
         - platform-team
-
+ 
 ---
 # project-apps: owns all EcommerceDDD application workloads
 apiVersion: argoproj.io/v1alpha1
@@ -57,11 +39,13 @@ metadata:
 spec:
   description: EcommerceDDD application services — deployed to ecom-dev
   sourceRepos:
-    - https://github.com/just-vile/ecommerceddd-gitops
+    - "*"
   destinations:
-    - server: https://kubernetes.default.svc
-      namespace: ecom-dev
-  clusterResourceWhitelist: []  # no cluster-scoped resources allowed
+    - server: "*"
+      namespace: "*"
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
   namespaceResourceWhitelist:
     - group: "*"
       kind: "*"
@@ -73,3 +57,5 @@ spec:
         - p, proj:project-apps:app-deployer, applications, get, project-apps/*, allow
       groups:
         - app-platform-team
+ 
+ 
