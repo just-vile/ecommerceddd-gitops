@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argo-cd-grafana
+  namespace: platform
+  labels:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/component: dashboard
+    app.kubernetes.io/part-of: observability
+    grafana_dashboard: "1"
+data:
+  argo-cd.json: |-
+    {
+      "title": "Argo CD Overview",
+      "uid": "argocd-overview",
+      "schemaVersion": 39,
+      "version": 1,
+      "refresh": "30s",
+      "tags": ["argocd", "ecommerceddd"],
+      "timezone": "browser",
+      "panels": []
+    }
