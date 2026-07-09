@@ -7,6 +7,7 @@ metadata:
 
 bases:
   - ../../base
+  - ingress.yaml
 
 # Patches for dev environment (if needed in future)
 # patchesStrategicMerge:

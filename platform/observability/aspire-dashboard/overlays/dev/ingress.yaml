@@ -1,0 +1,26 @@
+---
+# Ingress for Aspire Dashboard access
+# For Minikube: add entry to /etc/hosts or use `minikube ip`
+# Example: 192.168.99.100 aspire.dev.ecommerceddd.local (then http://aspire.dev.ecommerceddd.local)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aspire-dashboard
+  namespace: platform
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: aspire.dev.ecommerceddd.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: aspire-dashboard
+                port:
+                  number: 18889
+ 
+ 
