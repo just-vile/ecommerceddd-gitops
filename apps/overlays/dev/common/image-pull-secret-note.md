@@ -5,7 +5,7 @@ Create once before pulling private GHCR images.
 ```bash
 kubectl -n ecom-dev create secret docker-registry ecom-dev-ghcr \
   --docker-server=ghcr.io \
-  --docker-username=MY_USER \
+  --docker-username=just-vile \
   --docker-password=MY_GHCR_TOKEN
 ```
 

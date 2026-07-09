@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: spa
-          image: ghcr.io/MY_USER/ecommerceddd-spa:main-latest
+          image: ghcr.io/just-vile/ecommerceddd-spa:main-latest
 ---
 apiVersion: v1
 kind: ConfigMap

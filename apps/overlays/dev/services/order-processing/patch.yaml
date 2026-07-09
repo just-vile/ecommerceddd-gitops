@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/MY_USER/ecommerceddd-order-processing:main-latest
+          image: ghcr.io/just-vile/ecommerceddd-order-processing:main-latest
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/MY_USER/SERVICE:main-latest
+          image: ghcr.io/just-vile/SERVICE:main-latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

@@ -22,27 +22,27 @@ resources:
   - ingress/spa-ingress.yaml
 
 images:
-  - name: ghcr.io/MY_USER/ecommerceddd-customer-management
+  - name: ghcr.io/just-vile/ecommerceddd-customer-management
     newTag: main-latest
-  - name: ghcr.io/MY_USER/ecommerceddd-product-catalog
+  - name: ghcr.io/just-vile/ecommerceddd-product-catalog
     newTag: main-latest
-  - name: ghcr.io/MY_USER/ecommerceddd-inventory-management
+  - name: ghcr.io/just-vile/ecommerceddd-inventory-management
     newTag: main-latest
-  - name: ghcr.io/MY_USER/ecommerceddd-quote-management
+  - name: ghcr.io/just-vile/ecommerceddd-quote-management
     newTag: main-latest
-  - name: ghcr.io/MY_USER/ecommerceddd-order-processing
+  - name: ghcr.io/just-vile/ecommerceddd-order-processing
     newTag: main-latest
-  - name: ghcr.io/MY_USER/ecommerceddd-payment-processing
+  - name: ghcr.io/just-vile/ecommerceddd-payment-processing
     newTag: main-latest
-  - name: ghcr.io/MY_USER/ecommerceddd-shipment-processing
+  - name: ghcr.io/just-vile/ecommerceddd-shipment-processing
     newTag: main-latest
-  - name: ghcr.io/MY_USER/ecommerceddd-identityserver
+  - name: ghcr.io/just-vile/ecommerceddd-identityserver
     newTag: main-latest
-  - name: ghcr.io/MY_USER/ecommerceddd-apigateway
+  - name: ghcr.io/just-vile/ecommerceddd-apigateway
     newTag: main-latest
-  - name: ghcr.io/MY_USER/ecommerceddd-signalr
+  - name: ghcr.io/just-vile/ecommerceddd-signalr
     newTag: main-latest
-  - name: ghcr.io/MY_USER/ecommerceddd-spa
+  - name: ghcr.io/just-vile/ecommerceddd-spa
     newTag: main-latest
 
 commonAnnotations:
