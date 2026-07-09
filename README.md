@@ -100,6 +100,7 @@ Add these to `/etc/hosts` → Minikube IP (`minikube ip --profile ecommerceddd`)
 <minikube-ip>  id.dev.ecommerceddd.local
 <minikube-ip>  hub.dev.ecommerceddd.local
 <minikube-ip>  grafana.dev.ecommerceddd.local
+<minikube-ip>  aspire.dev.ecommerceddd.local
 ```
 
 ---

@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ecom-apigateway
+  namespace: ecom-dev
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - api.dev.ecommerceddd.local
+      secretName: ecom-dev-tls-wildcard
+  rules:
+    - host: api.dev.ecommerceddd.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ecommerceddd-apigateway-api
+                port:
+                  number: 80

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+data:
+  ASPNETCORE_URLS: http://+:80
+  ASPNETCORE_ENVIRONMENT: Development
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector.platform.svc.cluster.local:4317

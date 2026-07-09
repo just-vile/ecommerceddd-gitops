@@ -1,27 +1,26 @@
-# Wave 2: App workloads for dev environment
-# Applied after platform is healthy (wave 3+ completes)
+# Wave 5: Aspire Dashboard (receives traces from OTEL Collector)
+# Deployed after OTEL Collector so it's ready to receive telemetry
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: apps-dev
+  name: platform-aspire-dashboard-dev
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "5"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: project-apps
+  project: project-platform
   source:
     repoURL: https://github.com/just-vile/ecommerceddd-gitops
-    path: apps/overlays/dev
+    path: platform/observability/aspire-dashboard/overlays/dev
     targetRevision: main
   destination:
     server: https://kubernetes.default.svc
-    namespace: ecom-dev
+    namespace: platform
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=false
       - ServerSideApply=true

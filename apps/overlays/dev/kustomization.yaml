@@ -1,0 +1,49 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ecom-dev
+
+resources:
+  - common/env-config.yaml
+  - services/customer-management
+  - services/product-catalog
+  - services/inventory-management
+  - services/quote-management
+  - services/order-processing
+  - services/payment-processing
+  - services/shipment-processing
+  - services/identityserver
+  - services/apigateway
+  - services/signalr
+  - services/spa
+  - ingress/apigateway-ingress.yaml
+  - ingress/identityserver-ingress.yaml
+  - ingress/signalr-ingress.yaml
+  - ingress/spa-ingress.yaml
+
+images:
+  - name: ghcr.io/MY_USER/ecommerceddd-customer-management
+    newTag: main-latest
+  - name: ghcr.io/MY_USER/ecommerceddd-product-catalog
+    newTag: main-latest
+  - name: ghcr.io/MY_USER/ecommerceddd-inventory-management
+    newTag: main-latest
+  - name: ghcr.io/MY_USER/ecommerceddd-quote-management
+    newTag: main-latest
+  - name: ghcr.io/MY_USER/ecommerceddd-order-processing
+    newTag: main-latest
+  - name: ghcr.io/MY_USER/ecommerceddd-payment-processing
+    newTag: main-latest
+  - name: ghcr.io/MY_USER/ecommerceddd-shipment-processing
+    newTag: main-latest
+  - name: ghcr.io/MY_USER/ecommerceddd-identityserver
+    newTag: main-latest
+  - name: ghcr.io/MY_USER/ecommerceddd-apigateway
+    newTag: main-latest
+  - name: ghcr.io/MY_USER/ecommerceddd-signalr
+    newTag: main-latest
+  - name: ghcr.io/MY_USER/ecommerceddd-spa
+    newTag: main-latest
+
+commonAnnotations:
+  ecommerceddd.io/gitops-sha: "$Format:%H$"

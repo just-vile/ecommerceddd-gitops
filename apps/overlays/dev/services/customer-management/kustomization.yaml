@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../../base/dotnet-service
+
+namePrefix: ecommerceddd-customer-management-
+
+commonLabels:
+  app.kubernetes.io/name: ecommerceddd-customer-management
+  app.kubernetes.io/instance: customer-management
+
+patchesStrategicMerge:
+  - patch.yaml

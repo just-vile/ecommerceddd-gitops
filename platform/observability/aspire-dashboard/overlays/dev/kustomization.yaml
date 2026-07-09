@@ -5,13 +5,11 @@ metadata:
   name: aspire-dashboard-dev
   namespace: platform
 
-bases:
+resources:
   - ../../base
   - ingress.yaml
 
-# Patches for dev environment (if needed in future)
-# patchesStrategicMerge:
-#   - patches.yaml
+namespace: platform
 
 # Replicas override (optional)
 replicas:

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spa-config
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+data:
+  config.json: |
+    {
+      "apiBaseUrl": "https://api.dev.ecommerceddd.local",
+      "identityUrl": "https://id.dev.ecommerceddd.local",
+      "signalRHubUrl": "https://hub.dev.ecommerceddd.local"
+    }

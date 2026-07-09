@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../../base/spa
+
+namePrefix: ecommerceddd-spa-
+
+commonLabels:
+  app.kubernetes.io/name: ecommerceddd-spa
+  app.kubernetes.io/instance: spa
+
+patchesStrategicMerge:
+  - patch.yaml

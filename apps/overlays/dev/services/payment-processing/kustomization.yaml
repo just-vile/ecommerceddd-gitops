@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../../base/dotnet-service
+
+namePrefix: ecommerceddd-payment-processing-
+
+commonLabels:
+  app.kubernetes.io/name: ecommerceddd-payment-processing
+  app.kubernetes.io/instance: payment-processing
+
+patchesStrategicMerge:
+  - patch.yaml

@@ -26,7 +26,7 @@ spec:
         - p, proj:project-platform:platform-admin, applications, *, project-platform/*, allow
       groups:
         - platform-team
- 
+
 ---
 # project-apps: owns all EcommerceDDD application workloads
 apiVersion: argoproj.io/v1alpha1
@@ -57,5 +57,3 @@ spec:
         - p, proj:project-apps:app-deployer, applications, get, project-apps/*, allow
       groups:
         - app-platform-team
- 
- 

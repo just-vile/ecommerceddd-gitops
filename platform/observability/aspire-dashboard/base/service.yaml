@@ -20,5 +20,3 @@ spec:
       targetPort: otlp
       protocol: TCP
   type: ClusterIP
- 
- 

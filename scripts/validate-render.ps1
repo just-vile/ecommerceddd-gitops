@@ -25,7 +25,8 @@ $overlays = @(
     "platform/observability/prometheus/overlays/dev",
     "platform/observability/grafana/overlays/dev",
     "platform/policies",
-    "platform/projects"
+    "platform/projects",
+    "apps/overlays/dev"
 )
 
 $passed = @()

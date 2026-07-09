@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../../base/dotnet-service
+
+namePrefix: ecommerceddd-product-catalog-
+
+commonLabels:
+  app.kubernetes.io/name: ecommerceddd-product-catalog
+  app.kubernetes.io/instance: product-catalog
+
+patchesStrategicMerge:
+  - patch.yaml

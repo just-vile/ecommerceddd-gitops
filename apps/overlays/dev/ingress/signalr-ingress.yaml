@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ecom-signalr
+  namespace: ecom-dev
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - hub.dev.ecommerceddd.local
+      secretName: ecom-dev-tls-wildcard
+  rules:
+    - host: hub.dev.ecommerceddd.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ecommerceddd-signalr-api
+                port:
+                  number: 80
