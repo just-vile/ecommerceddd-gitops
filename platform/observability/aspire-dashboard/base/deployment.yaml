@@ -27,30 +27,15 @@ spec:
         - name: aspire-dashboard
           image: mcr.microsoft.com/dotnet/aspire-dashboard:9.1
           ports:
-            - name: http
+            - name: dashboard
+              containerPort: 18888
+              protocol: TCP
+            - name: otlp
               containerPort: 18889
               protocol: TCP
           env:
             - name: DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS
               value: "true"
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: http
-              scheme: HTTP
-            initialDelaySeconds: 15
-            periodSeconds: 30
-            timeoutSeconds: 5
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: http
-              scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 2
           resources:
             requests:
               cpu: 50m
@@ -71,3 +56,5 @@ spec:
       volumes:
         - name: tmp
           emptyDir: {}
+ 
+ 

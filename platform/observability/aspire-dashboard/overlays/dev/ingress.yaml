@@ -21,6 +21,6 @@ spec:
               service:
                 name: aspire-dashboard
                 port:
-                  number: 18889
+                  number: 18888
  
  
