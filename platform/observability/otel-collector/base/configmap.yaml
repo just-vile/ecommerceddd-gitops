@@ -43,6 +43,11 @@ data:
       # Debug logging (dev only)
       debug:
         verbosity: basic
+      # OTLP forwarding to Aspire Dashboard (traces + metrics)
+      otlphttp:
+        endpoint: http://aspire-dashboard.platform.svc.cluster.local:18889
+        tls:
+          insecure: true
       # OTLP forwarding to Tempo (if deployed)
       # otlp/tempo:
       #   endpoint: tempo.platform.svc.cluster.local:4317
@@ -63,11 +68,11 @@ data:
         traces:
           receivers: [otlp]
           processors: [memory_limiter, batch, resource]
-          exporters: [debug]
+          exporters: [otlphttp, debug]
         metrics:
           receivers: [otlp]
           processors: [memory_limiter, batch, resource]
-          exporters: [prometheus, debug]
+          exporters: [otlphttp, prometheus, debug]
         logs:
           receivers: [otlp]
           processors: [memory_limiter, batch, resource]

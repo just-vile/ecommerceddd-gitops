@@ -1,0 +1,17 @@
+---
+# ConfigMap: Aspire Dashboard configuration
+# Collects telemetry from OTEL Collector via OTLP protocol
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aspire-dashboard-config
+  namespace: platform
+  labels:
+    app.kubernetes.io/name: aspire-dashboard
+    app.kubernetes.io/component: observability
+data:
+  # Aspire Dashboard is primarily configured via environment variables
+  # See deployment.yaml for DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS setting
+  # 
+  # Additional settings can be passed via OTLP_ENDPOINT_VARIABLES if needed
+  # Aspire Dashboard listens on port 18889 by default (hardcoded)

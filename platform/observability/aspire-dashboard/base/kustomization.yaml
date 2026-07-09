@@ -1,0 +1,19 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: aspire-dashboard
+  namespace: platform
+
+resources:
+  - deployment.yaml
+  - service.yaml
+  - configmap.yaml
+
+commonLabels:
+  app.kubernetes.io/name: aspire-dashboard
+  app.kubernetes.io/part-of: observability
+  app.kubernetes.io/managed-by: kustomize
+
+commonAnnotations:
+  kustomize.config.k8s.io/version: "v5.6"

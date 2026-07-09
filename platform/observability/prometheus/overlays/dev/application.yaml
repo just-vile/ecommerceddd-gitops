@@ -69,5 +69,3 @@ spec:
     syncOptions:
       - CreateNamespace=false
       - ServerSideApply=true
- 
- 
