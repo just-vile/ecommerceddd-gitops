@@ -22,7 +22,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: api
-          image: ghcr.io/just-vile/SERVICE:main-latest
+          image: ghcr.io/just-vile/SERVICE:t6
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false

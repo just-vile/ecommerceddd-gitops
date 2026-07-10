@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/just-vile/ecommerceddd-identityserver:main-latest
+          image: ghcr.io/just-vile/ecommerceddd-identityserver:t6
 ---
 apiVersion: v1
 kind: ConfigMap
