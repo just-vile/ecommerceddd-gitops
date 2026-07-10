@@ -316,7 +316,7 @@ Wrap `payment-processing` and `order-processing` in **Argo Rollouts** `Rollout` 
 All wired via `ConfigMap` per env, mounted as `envFrom`.
 
 ### 9.2 Secrets to externalize
-- `POSTGRES_PASSWORD` (currently `P@55w0rd` in compose — **rotate before prod**)
+- `POSTGRES_PASSWORD` (currently `postgres` in compose — **rotate before prod**)
 - IdentityServer signing keys + client secrets (currently in `appsettings.json`)
 - `TokenIssuerSettings__ClientSecret`
 - `PGADMIN_DEFAULT_PASSWORD` (dev only)
