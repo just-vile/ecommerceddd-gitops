@@ -5,6 +5,7 @@ metadata:
   namespace: ecom-dev
   annotations:
     argocd.argoproj.io/sync-wave: "7"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
   rules:
