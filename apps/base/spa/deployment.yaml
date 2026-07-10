@@ -14,6 +14,8 @@ spec:
       labels:
         app.kubernetes.io/name: spa
     spec:
+      imagePullSecrets:
+        - name: ecom-dev-ghcr
       securityContext:
         runAsNonRoot: true
         seccompProfile:
