@@ -43,6 +43,9 @@ spec:
             - name: app-config
               mountPath: /usr/share/nginx/html/assets/config.json
               subPath: config.json
+            - name: app-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: nginx-default.conf
             - name: nginx-cache
               mountPath: /var/cache/nginx
             - name: nginx-run
@@ -71,4 +74,3 @@ spec:
           emptyDir: {}
         - name: nginx-tmp
           emptyDir: {}
- 
