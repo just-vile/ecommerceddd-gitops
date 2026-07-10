@@ -47,3 +47,8 @@ images:
 
 commonAnnotations:
   ecommerceddd.io/gitops-sha: "$Format:%H$"
+
+patches:
+  - path: common/image-pull-secret-patch.yaml
+    target:
+      kind: Deployment
