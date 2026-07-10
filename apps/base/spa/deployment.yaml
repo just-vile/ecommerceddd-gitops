@@ -18,6 +18,8 @@ spec:
         - name: ecom-dev-ghcr
       securityContext:
         runAsNonRoot: true
+        runAsUser: 101 
+        runAsGroup: 101
         seccompProfile:
           type: RuntimeDefault
       containers:
