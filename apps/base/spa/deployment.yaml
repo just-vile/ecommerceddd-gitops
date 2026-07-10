@@ -14,10 +14,20 @@ spec:
       labels:
         app.kubernetes.io/name: spa
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: spa
           image: ghcr.io/just-vile/SERVICE:main-latest
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
           ports:
             - name: http
               containerPort: 80
@@ -42,3 +52,5 @@ spec:
         - name: app-config
           configMap:
             name: spa-config
+ 
+ 

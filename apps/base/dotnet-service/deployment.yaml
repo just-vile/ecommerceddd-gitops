@@ -14,10 +14,20 @@ spec:
       labels:
         app.kubernetes.io/name: api
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: api
           image: ghcr.io/just-vile/SERVICE:main-latest
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
           ports:
             - name: http
               containerPort: 80
@@ -48,3 +58,5 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
+ 
+ 
