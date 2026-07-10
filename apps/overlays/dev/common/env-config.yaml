@@ -8,7 +8,9 @@ metadata:
 data:
   ASPNETCORE_URLS: http://+:80
   OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector.platform.svc.cluster.local:4317
-  KafkaConsumer__ConnectionString: ecom-kafka-kafka-bootstrap.data.svc.cluster.local:9092
+  KafkaConsumer__ConnectionString: kafka.platform.svc.cluster.local:9092
   DebeziumSettings__ConnectorUrl: http://connect.platform.svc.cluster.local:8083/connectors/default-connector
   DebeziumSettings__DatabaseHostname: postgres.platform.svc.cluster.local
   TokenIssuerSettings__Authority: http://id.dev.ecommerceddd.local
+ 
+ 
