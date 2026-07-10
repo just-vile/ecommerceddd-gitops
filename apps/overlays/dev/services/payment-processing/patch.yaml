@@ -17,3 +17,4 @@ metadata:
   name: api-config
 data:
   Service__Name: payment-processing
+  ConnectionStrings__DefaultConnection: Host=postgres.platform.svc.cluster.local;Port=5432;Database=identityserverdb;Username=postgres;Password=P@55w0rd
