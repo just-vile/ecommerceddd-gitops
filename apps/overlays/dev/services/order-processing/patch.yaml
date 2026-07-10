@@ -17,4 +17,4 @@ metadata:
   name: api-config
 data:
   Service__Name: order-processing
-  ConnectionStrings__DefaultConnection: Host=postgres.platform.svc.cluster.local;Port=5432;Database=ordersdb;Username=postgres;Password=postgres
+  ConnectionStrings__DefaultConnection: Host=postgres.platform.svc.cluster.local;Port=5432;Database=ordersdb;Username=postgres;Password=P@55w0rd

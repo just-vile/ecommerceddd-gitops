@@ -10,10 +10,6 @@ metadata:
     nginx.ingress.kubernetes.io/affinity: "cookie"
 spec:
   ingressClassName: nginx
-  tls:
-    - hosts:
-        - hub.dev.ecommerceddd.local
-      secretName: ecom-dev-tls-wildcard
   rules:
     - host: hub.dev.ecommerceddd.local
       http:

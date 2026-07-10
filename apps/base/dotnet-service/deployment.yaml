@@ -14,8 +14,6 @@ spec:
       labels:
         app.kubernetes.io/name: api
     spec:
-      imagePullSecrets:
-        - name: ecom-dev-ghcr
       securityContext:
         runAsNonRoot: true
         seccompProfile:
@@ -60,5 +58,3 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
- 
- 

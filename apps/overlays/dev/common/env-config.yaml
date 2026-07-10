@@ -12,5 +12,3 @@ data:
   DebeziumSettings__ConnectorUrl: http://connect.platform.svc.cluster.local:8083/connectors/default-connector
   DebeziumSettings__DatabaseHostname: postgres.platform.svc.cluster.local
   TokenIssuerSettings__Authority: http://id.dev.ecommerceddd.local
- 
- 

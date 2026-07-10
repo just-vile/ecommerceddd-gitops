@@ -18,7 +18,7 @@ metadata:
 data:
   config.json: |
     {
-      "apiBaseUrl": "https://api.dev.ecommerceddd.local",
-      "identityUrl": "https://id.dev.ecommerceddd.local",
-      "signalRHubUrl": "https://hub.dev.ecommerceddd.local"
+      "apiBaseUrl": "http://api.dev.ecommerceddd.local",
+      "identityUrl": "http://id.dev.ecommerceddd.local",
+      "signalRHubUrl": "http://hub.dev.ecommerceddd.local"
     }
