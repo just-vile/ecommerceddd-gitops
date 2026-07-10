@@ -15,6 +15,12 @@ spec:
               value: http://ecommerceddd-identityserver-api
             - name: TokenIssuerSettings__Authority
               value: http://ecommerceddd-identityserver-api
+            - name: TokenIssuerSettings__ClientId
+              value: ecommerceddd.application_client
+            - name: TokenIssuerSettings__ClientSecret
+              value: secret33587^&%&^%&^f3%%%
+            - name: TokenIssuerSettings__Scope
+              value: ecommerceddd-api.scope read write
 ---
 apiVersion: v1
 kind: ConfigMap
