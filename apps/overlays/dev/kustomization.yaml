@@ -23,27 +23,27 @@ resources:
 
 images:
   - name: ghcr.io/just-vile/ecommerceddd-customer-management
-    newTag: t6.1
+    newTag: t6.2
   - name: ghcr.io/just-vile/ecommerceddd-product-catalog
-    newTag: t6.1
+    newTag: t6.2
   - name: ghcr.io/just-vile/ecommerceddd-inventory-management
-    newTag: t6.1
+    newTag: t6.2
   - name: ghcr.io/just-vile/ecommerceddd-quote-management
-    newTag: t6.1
+    newTag: t6.2
   - name: ghcr.io/just-vile/ecommerceddd-order-processing
-    newTag: t6.1
+    newTag: t6.2
   - name: ghcr.io/just-vile/ecommerceddd-payment-processing
-    newTag: t6.1
+    newTag: t6.2
   - name: ghcr.io/just-vile/ecommerceddd-shipment-processing
-    newTag: t6.1
+    newTag: t6.2
   - name: ghcr.io/just-vile/ecommerceddd-identityserver
-    newTag: t6.1
+    newTag: t6.2
   - name: ghcr.io/just-vile/ecommerceddd-apigateway
-    newTag: t6.1
+    newTag: t6.2
   - name: ghcr.io/just-vile/ecommerceddd-signalr
-    newTag: t6.1
+    newTag: t6.2
   - name: ghcr.io/just-vile/ecommerceddd-spa
-    newTag: t6.1
+    newTag: t6.2
 
 commonAnnotations:
   ecommerceddd.io/gitops-sha: "$Format:%H$"

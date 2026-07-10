@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/just-vile/ecommerceddd-payment-processing:t6.1
+          image: ghcr.io/just-vile/ecommerceddd-payment-processing:t6.2
 ---
 apiVersion: v1
 kind: ConfigMap

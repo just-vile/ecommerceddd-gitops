@@ -9,7 +9,10 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/just-vile/ecommerceddd-apigateway:t6.1
+          image: ghcr.io/just-vile/ecommerceddd-apigateway:t6.2
+          env:
+            - name: Cors__AllowedOrigins__0
+              value: http://app.dev.ecommerceddd.local
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -17,3 +20,5 @@ metadata:
   name: api-config
 data:
   Service__Name: apigateway
+ 
+ 
