@@ -18,6 +18,7 @@ spec:
         runAsNonRoot: true
         runAsUser: 101
         runAsGroup: 101
+        fsGroup: 101
         seccompProfile:
           type: RuntimeDefault
       containers:
@@ -42,6 +43,12 @@ spec:
             - name: app-config
               mountPath: /usr/share/nginx/html/assets/config.json
               subPath: config.json
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+            - name: nginx-run
+              mountPath: /var/run
+            - name: nginx-tmp
+              mountPath: /tmp
           readinessProbe:
             httpGet:
               path: /
@@ -58,5 +65,10 @@ spec:
         - name: app-config
           configMap:
             name: spa-config
- 
+        - name: nginx-cache
+          emptyDir: {}
+        - name: nginx-run
+          emptyDir: {}
+        - name: nginx-tmp
+          emptyDir: {}
  
