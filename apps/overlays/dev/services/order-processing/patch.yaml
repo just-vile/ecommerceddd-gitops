@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/just-vile/ecommerceddd-order-processing:t6.2
+          image: ghcr.io/just-vile/ecommerceddd-order-processing:t7.1
           env:
             - name: Services__QuoteManagement
               value: http://ecommerceddd-quote-management-api
@@ -27,6 +27,20 @@ spec:
               value: shipments
             - name: KafkaConsumer__Topics__2
               value: orders
+            - name: DebeziumSettings__ConnectorUrl
+              value: http://connect.platform.svc.cluster.local:8083/connectors/orders-connector
+            - name: DebeziumSettings__DatabaseName
+              value: ordersdb
+            - name: DebeziumSettings__TopicPrefix
+              value: orders
+            - name: DebeziumSettings__TransformsTopicReplacement
+              value: orders
+            - name: DebeziumSettings__SlotName
+              value: orders
+            - name: DebeziumSettings__SchemaIncludeList
+              value: public
+            - name: DebeziumSettings__TableIncludeList
+              value: public.mt_doc_outboxmessages
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -35,3 +49,5 @@ metadata:
 data:
   Service__Name: order-processing
   ConnectionStrings__DefaultConnection: Host=postgres.platform.svc.cluster.local;Port=5432;Database=ordersdb;Username=postgres;Password=postgres
+ 
+ 
