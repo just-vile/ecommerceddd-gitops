@@ -30,7 +30,7 @@ spec:
             runAsNonRoot: true
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8080
               protocol: TCP
           envFrom:
             - configMapRef:
