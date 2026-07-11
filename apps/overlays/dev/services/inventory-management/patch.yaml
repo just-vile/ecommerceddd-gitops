@@ -10,6 +10,9 @@ spec:
       containers:
         - name: api
           image: ghcr.io/just-vile/ecommerceddd-inventory-management:t6.2
+          env:
+            - name: TokenIssuerSettings__Scope
+              value: ecommerceddd-api.scope read write
 ---
 apiVersion: v1
 kind: ConfigMap

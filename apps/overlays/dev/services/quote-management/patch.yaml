@@ -10,6 +10,11 @@ spec:
       containers:
         - name: api
           image: ghcr.io/just-vile/ecommerceddd-quote-management:t6.2
+          env:
+            - name: Services__ProductCatalog
+              value: http://ecommerceddd-product-catalog-api
+            - name: TokenIssuerSettings__Scope
+              value: ecommerceddd-api.scope read write delete
 ---
 apiVersion: v1
 kind: ConfigMap

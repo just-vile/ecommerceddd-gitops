@@ -10,6 +10,9 @@ spec:
       containers:
         - name: api
           image: ghcr.io/just-vile/ecommerceddd-product-catalog:t6.2
+          env:
+            - name: Services__InventoryManagement
+              value: http://ecommerceddd-inventory-management-api
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -12,3 +12,5 @@ data:
   DebeziumSettings__ConnectorUrl: http://connect.platform.svc.cluster.local:8083/connectors/default-connector
   DebeziumSettings__DatabaseHostname: postgres.platform.svc.cluster.local
   TokenIssuerSettings__Authority: http://ecommerceddd-identityserver-api.ecom-dev.svc.cluster.local
+  TokenIssuerSettings__ClientId: ecommerceddd.application_client
+  TokenIssuerSettings__Scope: ecommerceddd-api.scope read write

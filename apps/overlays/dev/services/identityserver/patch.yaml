@@ -10,6 +10,11 @@ spec:
       containers:
         - name: api
           image: ghcr.io/just-vile/ecommerceddd-identityserver:t6.2
+          env:
+            - name: TokenIssuerSettings__ClientId
+              value: ecommerceddd.user_client
+            - name: TokenIssuerSettings__Scope
+              value: openid email read write delete
 ---
 apiVersion: v1
 kind: ConfigMap

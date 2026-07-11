@@ -10,6 +10,23 @@ spec:
       containers:
         - name: api
           image: ghcr.io/just-vile/ecommerceddd-order-processing:t6.2
+          env:
+            - name: Services__QuoteManagement
+              value: http://ecommerceddd-quote-management-api
+            - name: Services__PaymentProcessing
+              value: http://ecommerceddd-payment-processing-api
+            - name: Services__ShipmentProcessing
+              value: http://ecommerceddd-shipment-processing-api
+            - name: Services__SignalRClient
+              value: http://ecommerceddd-signalr-api
+            - name: KafkaConsumer__Group
+              value: OrderProcessing-Group
+            - name: KafkaConsumer__Topics__0
+              value: payments
+            - name: KafkaConsumer__Topics__1
+              value: shipments
+            - name: KafkaConsumer__Topics__2
+              value: orders
 ---
 apiVersion: v1
 kind: ConfigMap

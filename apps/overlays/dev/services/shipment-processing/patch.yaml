@@ -10,6 +10,23 @@ spec:
       containers:
         - name: api
           image: ghcr.io/just-vile/ecommerceddd-shipment-processing:t6.2
+          env:
+            - name: TokenIssuerSettings__Scope
+              value: ecommerceddd-api.scope read write delete
+            - name: DebeziumSettings__ConnectorUrl
+              value: http://connect.platform.svc.cluster.local:8083/connectors/shipments-connector
+            - name: DebeziumSettings__DatabaseName
+              value: shipmentsdb
+            - name: DebeziumSettings__TopicPrefix
+              value: shipments
+            - name: DebeziumSettings__TransformsTopicReplacement
+              value: shipments
+            - name: DebeziumSettings__SlotName
+              value: shipments
+            - name: DebeziumSettings__SchemaIncludeList
+              value: public
+            - name: DebeziumSettings__TableIncludeList
+              value: public.mt_doc_outboxmessages
 ---
 apiVersion: v1
 kind: ConfigMap

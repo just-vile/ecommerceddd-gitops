@@ -10,6 +10,25 @@ spec:
       containers:
         - name: api
           image: ghcr.io/just-vile/ecommerceddd-payment-processing:t6.2
+          env:
+            - name: Services__InventoryManagement
+              value: http://ecommerceddd-inventory-management-api
+            - name: Services__CustomerManagement
+              value: http://ecommerceddd-customer-management-api
+            - name: DebeziumSettings__ConnectorUrl
+              value: http://connect.platform.svc.cluster.local:8083/connectors/payments-connector
+            - name: DebeziumSettings__DatabaseName
+              value: paymentsdb
+            - name: DebeziumSettings__TopicPrefix
+              value: payments
+            - name: DebeziumSettings__TransformsTopicReplacement
+              value: payments
+            - name: DebeziumSettings__SlotName
+              value: payments
+            - name: DebeziumSettings__SchemaIncludeList
+              value: public
+            - name: DebeziumSettings__TableIncludeList
+              value: public.mt_doc_outboxmessages
 ---
 apiVersion: v1
 kind: ConfigMap
