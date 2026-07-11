@@ -6,8 +6,6 @@ metadata:
   labels:
     app.kubernetes.io/name: kafka
     app.kubernetes.io/component: broker
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
 spec:
   serviceName: kafka-headless
   replicas: 1

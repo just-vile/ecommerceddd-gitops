@@ -105,9 +105,9 @@ Rationale: separates “what to build” from “what is deployed where”. Prev
 | GitOps | **Argo CD** with App‑of‑Apps | Standard, declarative, drift detection |
 | Registry | **GHCR** (`ghcr.io/<org>/ecommerceddd-*`) | Free for public/OSS, OIDC from Actions |
 | Secrets | **Pre-created Kubernetes Secrets** (dev only) | Keeps secret values out of Git while allowing Minikube bootstrap via local `kubectl create secret` commands |
-| DB in cluster | **CloudNativePG** operator (Postgres 18, logical replication supported) | HA, backups, PITR |
-| Kafka in cluster | **Strimzi** operator (KRaft mode) | Production‑grade Kafka on K8s |
-| Debezium | Strimzi **KafkaConnect** + **KafkaConnector** CRs | Native to Strimzi |
+| DB in cluster | **PostgreSQL StatefulSet** (Postgres 18, logical replication enabled) | HA, backups, PITR |
+| Kafka in cluster | **Plain Kafka StatefulSet** (KRaft mode) | Production‑grade Kafka on K8s |
+| Debezium | **Plain Kafka Connect Deployment** | CDC from Postgres → Kafka (outbox) |
 | Ingress | **ingress-nginx** | Simple, well‑supported |
 | TLS | `mkcert` + manually managed Kubernetes TLS secrets | Local trusted certs without public DNS or an in-cluster certificate controller |
 | Observability | **OpenTelemetry Collector** → Tempo/Loki/Prometheus (or Aspire Dashboard for dev only) | Existing OTLP config already wired |
@@ -166,8 +166,9 @@ EcommerceDDD-gitops/
 │   ├── argocd/                        # bootstrap
 │   ├── ingress-nginx/
 │   ├── external-secrets/
-│   ├── cnpg/                          # CloudNativePG operator + Cluster CR
-│   ├── strimzi/                       # Kafka + KafkaConnect + KafkaConnector
+│   ├── postgres/                      # Postgres StatefulSet + bootstrap job
+│   ├── kafka/                         # Kafka StatefulSet + topic bootstrap job
+│   ├── connect/                       # Kafka Connect Deployment
 │   └── observability/                 # otel-collector, prometheus, grafana
 └── apps/
     ├── root-app.yaml                  # App-of-Apps root
@@ -205,10 +206,10 @@ nginx.ingress.kubernetes.io/affinity: "cookie"
 ```
 
 ### 6.4 Data & messaging
-- **CloudNativePG `Cluster`** with `instances: 1` (dev), `postgresql.parameters: { wal_level: logical, max_wal_senders: "10", max_replication_slots: "10" }` — matches current compose `postgres` command. Create databases via a `SQL` bootstrap `Job` running `scripts/db_init.sql`.
-- **Strimzi `Kafka`** in **KRaft** mode, 1 broker (dev), PVC per broker.
-- **Strimzi `KafkaConnect`** + **`KafkaConnector`** CRs replacing today’s manual Debezium bootstrap.
-- **`Topic`** CRs pre‑create `payments`, `shipments`, `orders`, plus Debezium CDC topics.
+- **PostgreSQL StatefulSet** with `instances: 1` (dev), `postgresql.parameters: { wal_level: logical, max_wal_senders: "10", max_replication_slots: "10" }` — matches current compose `postgres` command. Create databases via a `SQL` bootstrap `Job` running `scripts/db_init.sql`.
+- **Kafka StatefulSet** in **KRaft** mode, 1 broker (dev), PVC per broker.
+- **Kafka Connect Deployment** with plain env vars for Debezium bootstrap.
+- **Bootstrap Job** pre‑creates `payments`, `shipments`, and `orders` topics.
 
 ### 6.5 Secrets flow (dev only)
 Use **pre-created Kubernetes Secrets** for the `dev` namespace in the Minikube cluster.
@@ -336,7 +337,7 @@ All wired via `ConfigMap` per env, mounted as `envFrom`.
 - No `LoadBalancer` services except ingress-nginx. Everything else `ClusterIP`.
 
 ### 9.5 Backups & DR
-- CNPG scheduled backups → local backup PVC or S3-compatible storage endpoint (for example MinIO) available from Minikube.
+- Postgres scheduled backups → local backup PVC or S3-compatible storage endpoint (for example MinIO) available from Minikube.
 - Kafka: mirror critical topics to a second cluster in phase 5.
 - Argo CD state is reproducible from Git → cluster loss is recoverable via re‑bootstrap.
 
@@ -361,7 +362,7 @@ Each milestone = one PR set. Ordered, dependencies flow top‑down.
    - Add `build-image.yml` reusable workflow.
 2. **M2 — Local K8s bring‑up** (gitops repo)
    - Bootstrap minikube cluster script.
-   - `platform/` charts: ingress-nginx, cnpg, strimzi, otel-collector.
+   - `platform/` charts: ingress-nginx, postgres, kafka, connect, otel-collector.
    - `charts/ecommerceddd-service/` generic chart.
    - `envs/dev/` values for all 11 components.
    - `README` with `make up` / `make down`.
@@ -387,10 +388,10 @@ Each milestone = one PR set. Ordered, dependencies flow top‑down.
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Debezium connector state loss when Postgres pod restarts | CDC gap → missed outbox events | Use CNPG with persistent WAL + Strimzi‑managed connector offsets in Kafka `CONNECT_OFFSETS` topic |
+| Debezium connector state loss when Postgres pod restarts | CDC gap → missed outbox events | Use persistent WAL + Connect offsets in Kafka `CONNECT_OFFSETS` topic |
 | SignalR sticky‑session behind ingress | Broken realtime for clients | Enable session affinity on the ingress, or use Redis backplane |
 | IdentityServer URLs baked in tokens | Token audience mismatch across envs | Set `TokenIssuerSettings__Authority` per env via ConfigMap; use ingress hostname, not cluster DNS, for issuer |
-| Kafka topic auto‑creation currently `true` | Topic sprawl / wrong partitioning in prod | Turn off `auto.create.topics.enable` in prod, pre‑declare via Strimzi `KafkaTopic` |
+| Kafka topic auto‑creation currently `true` | Topic sprawl / wrong partitioning in prod | Turn off `auto.create.topics.enable` in prod, pre‑declare via a bootstrap Job |
 | Secrets today in `appsettings.json` (e.g. `ClientSecret`) | Credential leak | Rotate all, move to Secrets before any non‑dev deploy |
 | Argo CD self‑heal reverting emergency `kubectl` fixes | Confusion during incidents | Documented incident runbook: pause auto‑sync, then fix via Git |
 | Angular SPA bakes API URL at build time | Wrong API URL per env | Switch SPA to runtime config (fetch `/assets/config.json` mounted from ConfigMap) |

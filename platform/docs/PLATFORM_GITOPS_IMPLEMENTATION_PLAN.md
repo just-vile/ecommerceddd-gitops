@@ -14,8 +14,8 @@ Platform scope includes:
 - Namespace and baseline cluster bootstrap
 - Argo CD installation and App-of-Apps root wiring
 - ingress-nginx and dev TLS secret bootstrap
-- CloudNativePG operator and Postgres clusters
-- Strimzi operator, Kafka, KafkaConnect, topics
+- Postgres StatefulSet and bootstrap Job
+- Kafka StatefulSet, Kafka Connect Deployment, and topic bootstrap Job
 - Observability baseline (OTel Collector + Prometheus/Grafana)
 - Platform policies and Argo project boundaries
 
@@ -55,26 +55,22 @@ platform/
       dev/
       README.md
 
-  cnpg/
-    operator/
-    clusters/
+  postgres/
+    base/
+    overlays/
       dev/
-      README.md
     bootstrap/
-      db-init-job.yaml
-    backup-policies/
 
-  strimzi/
-    operator/
-    kafka/
+  kafka/
+    base/
+    overlays/
       dev/
-      README.md
-    connect/
+    bootstrap/
+
+  connect/
+    base/
+    overlays/
       dev/
-      README.md
-    topics/
-      dev/
-      README.md
 
   observability/
     otel-collector/
@@ -116,10 +112,9 @@ platform/
     - Namespace bootstrap app
     - Argo projects app
     - ingress-nginx app
-    - cnpg operator app
-    - cnpg clusters app
-    - strimzi operator app
-    - strimzi kafka/connect/topics app
+    - postgres app
+    - kafka app
+    - connect app
     - observability apps
     - platform policies app
 
@@ -129,9 +124,9 @@ Use Argo CD sync-wave annotations to guarantee order:
 
 - Wave 0: namespaces, argo projects
 - Wave 1: ingress-nginx
-- Wave 2: cnpg operator, strimzi operator
-- Wave 3: cnpg clusters, kafka clusters, connect
-- Wave 4: topics, observability stack
+- Wave 2: postgres bootstrap, kafka bootstrap
+- Wave 3: postgres statefulset, kafka statefulset, connect deployment
+- Wave 4: topic bootstrap, observability stack
 - Wave 5: policies (if policy engine can enforce safely at this stage)
 
 ## 3.3 Argo project boundaries
@@ -197,27 +192,24 @@ Acceptance criteria:
 Goal: provide stateful platform dependencies used by microservices.
 
 Tasks:
-1. Install CNPG operator.
-2. Add per-environment CNPG cluster definitions in data namespace.
-3. Add DB bootstrap job for schema initialization.
-4. Install Strimzi operator.
-5. Add per-environment Kafka cluster definitions (KRaft mode).
-6. Add KafkaConnect definitions for Debezium connectors.
-7. Add required topic manifests for payments, shipments, orders.
+1. Add a Postgres StatefulSet and DB bootstrap job for schema initialization.
+2. Add a single-node Kafka StatefulSet in KRaft mode.
+3. Add a plain Kafka Connect Deployment.
+4. Add a topic bootstrap Job for payments, shipments, and orders.
+5. Wire app env vars to the in-cluster Kafka and Connect services.
 
 Deliverables:
-- platform/cnpg/operator/*
-- platform/cnpg/clusters/dev/*
-- platform/cnpg/bootstrap/db-init-job.yaml
-- platform/strimzi/operator/*
-- platform/strimzi/kafka/dev/*
-- platform/strimzi/connect/dev/*
-- platform/strimzi/topics/dev/*
+- platform/postgres/base/*
+- platform/postgres/bootstrap/*
+- platform/kafka/base/*
+- platform/kafka/bootstrap/*
+- platform/connect/base/*
+- platform/connect/overlays/dev/*
 
 Acceptance criteria:
-- CNPG cluster Ready in dev model.
-- Kafka brokers Ready and topics visible.
-- KafkaConnect Ready with connector CRs accepted.
+- Postgres StatefulSet Ready in dev.
+- Kafka pod Ready and topics visible after bootstrap job runs.
+- Kafka Connect Ready and reachable on the internal ClusterIP service.
 
 ## Phase D: Observability Platform
 
@@ -306,7 +298,7 @@ Pattern:
 
 Examples:
 - platform-ingress-dev
-- platform-cnpg-operator
+- platform-postgres-dev
 - platform-kafka-dev
 
 ## 6.2 Resource naming
@@ -322,7 +314,7 @@ Examples:
 
 - Pin chart versions explicitly.
 - Pin container tags explicitly (no floating latest).
-- Upgrade operators by dedicated PRs with release notes.
+- Upgrade platform components by dedicated PRs with release notes.
 
 ---
 
@@ -345,15 +337,15 @@ Create and maintain these runbooks under platform/docs/runbooks:
 - first install and recovery bootstrap steps
 
 2. platform-upgrade.md
-- operator/chart upgrade steps and rollback checkpoints
+- component upgrade steps and rollback checkpoints
 
 3. platform-rollback.md
 - rollback by Git revert and Argo sync strategy
 
-4. cnpg-recovery.md
+4. postgres-recovery.md
 - Postgres fail/recover checklist
 
-5. strimzi-recovery.md
+5. kafka-connect-recovery.md
 - Kafka and connect failure recovery checklist
 
 6. ingress-tls-rotation.md
@@ -368,11 +360,11 @@ Create and maintain these runbooks under platform/docs/runbooks:
 - Mitigation: keep implementation dev-only and defer staging/prod rollout.
 
 2. Resource pressure on Minikube
-- Risk: CNPG/Strimzi/Observability may starve app workloads.
+- Risk: Postgres/Kafka/Observability may starve app workloads.
 - Mitigation: define strict requests/limits and right-size Minikube profile.
 
-3. Operator upgrade regression
-- Risk: CRD or operator changes break existing resources.
+3. Platform component regression
+- Risk: manifest or image changes break existing resources.
 - Mitigation: separate upgrade PRs and validate in dev namespace first.
 
 4. Secret decryption dependency
@@ -389,7 +381,7 @@ Create and maintain these runbooks under platform/docs/runbooks:
 
 Platform implementation is complete when:
 1. Root app and platform app tree are Synced/Healthy in Argo CD.
-2. ingress-nginx, cnpg, strimzi, and observability are running.
+2. ingress-nginx, postgres, kafka, connect, and observability are running.
 3. Only dev overlays/resources are created; staging/prod remain deferred.
 4. Platform CI validation and policy checks are mandatory and green.
 5. Rollback and recovery runbooks are available and tested at least once in dev.

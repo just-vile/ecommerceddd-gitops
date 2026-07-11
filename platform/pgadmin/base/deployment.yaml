@@ -11,8 +11,6 @@ metadata:
   labels:
     app.kubernetes.io/name: pgadmin
     app.kubernetes.io/component: database-ui
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
 spec:
   replicas: 1
   selector:

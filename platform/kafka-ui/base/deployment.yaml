@@ -7,8 +7,6 @@ metadata:
   labels:
     app.kubernetes.io/name: kafka-ui
     app.kubernetes.io/component: messaging-ui
-  annotations:
-    argocd.argoproj.io/sync-wave: "4"
 spec:
   replicas: 1
   selector:

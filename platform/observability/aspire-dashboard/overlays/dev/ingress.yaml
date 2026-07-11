@@ -7,8 +7,6 @@ kind: Ingress
 metadata:
   name: aspire-dashboard
   namespace: platform
-  annotations:
-    argocd.argoproj.io/sync-wave: "5"
 spec:
   ingressClassName: nginx
   rules:

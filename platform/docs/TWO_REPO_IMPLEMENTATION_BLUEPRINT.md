@@ -98,13 +98,14 @@ Root layout:
     - stores/
       - dev/
       - README.md
-  - cnpg/
+  - postgres/
     - operator/
     - clusters/
       - dev/
       - README.md
     - backup-policies/
-  - strimzi/
+  - kafka/
+  - connect/
     - operator/
     - kafka/
       - dev/
@@ -360,8 +361,9 @@ Phase 0: Foundation
 
 Phase 1: Platform baseline in Repository B platform folder
 - ingress-nginx
-- cnpg operator
-- strimzi operator
+- postgres statefulset
+- kafka statefulset
+- connect deployment
 - otel collector and metrics stack
 
 Phase 2: App baseline in Repository B apps folder
@@ -429,7 +431,7 @@ Epic D: Promotion and governance
 Required runbooks in Repository B docs folder:
 - Argo CD sync failure triage
 - Rollback by reverting values tag
-- CNPG restore drill
+- Postgres restore drill
 - Kafka broker recovery
 - Secret rotation process
 - Emergency freeze process for prod sync

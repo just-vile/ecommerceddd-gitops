@@ -1,6 +1,6 @@
 ---
 # Job: creates all application databases after PostgreSQL becomes healthy.
-# Idempotent — safe to rerun via ArgoCD hook on re-sync.
+# Idempotent and safe to rerun manually.
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -9,10 +9,6 @@ metadata:
   labels:
     app.kubernetes.io/name: ecom-db-init
     app.kubernetes.io/component: database-bootstrap
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
-    argocd.argoproj.io/hook: PostSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
   ttlSecondsAfterFinished: 600
   backoffLimit: 3

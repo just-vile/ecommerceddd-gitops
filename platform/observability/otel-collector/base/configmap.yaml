@@ -18,7 +18,7 @@ data:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
- 
+
     processors:
       batch:
         send_batch_size: 1000
@@ -32,7 +32,7 @@ data:
           - key: deployment.environment
             value: dev
             action: upsert
- 
+
     exporters:
       # Prometheus metrics scrape endpoint
       prometheus:
@@ -53,7 +53,7 @@ data:
       #   endpoint: tempo.platform.svc.cluster.local:4317
       #   tls:
       #     insecure: true
- 
+
     extensions:
       health_check:
         endpoint: 0.0.0.0:13133
@@ -61,7 +61,7 @@ data:
         endpoint: 0.0.0.0:1777
       zpages:
         endpoint: 0.0.0.0:55679
- 
+
     service:
       extensions: [health_check, pprof, zpages]
       pipelines:
@@ -77,5 +77,3 @@ data:
           receivers: [otlp]
           processors: [memory_limiter, batch, resource]
           exporters: [otlp, debug]
- 
- 

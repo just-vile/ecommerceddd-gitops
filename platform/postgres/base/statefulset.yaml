@@ -11,8 +11,6 @@ metadata:
   labels:
     app.kubernetes.io/name: postgres
     app.kubernetes.io/component: database
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   serviceName: postgres
   replicas: 1

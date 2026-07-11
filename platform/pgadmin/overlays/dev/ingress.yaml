@@ -8,8 +8,6 @@ kind: Ingress
 metadata:
   name: pgadmin
   namespace: platform
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
 spec:
   ingressClassName: nginx
   rules:

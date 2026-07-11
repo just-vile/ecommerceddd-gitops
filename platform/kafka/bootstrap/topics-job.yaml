@@ -6,8 +6,6 @@ metadata:
   labels:
     app.kubernetes.io/name: kafka-topics-bootstrap
     app.kubernetes.io/component: bootstrap
-  annotations:
-    argocd.argoproj.io/sync-wave: "5"
 spec:
   backoffLimit: 4
   template:

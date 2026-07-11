@@ -8,8 +8,6 @@ kind: Ingress
 metadata:
   name: kafka-ui
   namespace: platform
-  annotations:
-    argocd.argoproj.io/sync-wave: "4"
 spec:
   ingressClassName: nginx
   rules:

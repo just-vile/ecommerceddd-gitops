@@ -6,8 +6,6 @@ kind: ConfigMap
 metadata:
   name: db-init-script
   namespace: platform
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 data:
   db_init.sh: |
     #!/bin/sh
