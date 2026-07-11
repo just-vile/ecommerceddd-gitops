@@ -11,4 +11,4 @@ data:
   KafkaConsumer__ConnectionString: kafka.platform.svc.cluster.local:9092
   DebeziumSettings__ConnectorUrl: http://connect.platform.svc.cluster.local:8083/connectors/default-connector
   DebeziumSettings__DatabaseHostname: postgres.platform.svc.cluster.local
-  TokenIssuerSettings__Authority: http://id.dev.ecommerceddd.local
+  TokenIssuerSettings__Authority: http://ecommerceddd-identityserver-api.ecom-dev.svc.cluster.local
