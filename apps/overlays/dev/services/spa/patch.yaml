@@ -20,5 +20,5 @@ data:
     {
       "apiBaseUrl": "http://api.dev.ecommerceddd.local",
       "identityUrl": "http://id.dev.ecommerceddd.local",
-      "signalRHubUrl": "http://api.dev.ecommerceddd.local/api/v2/signalr",
+      "signalRHubUrl": "http://api.dev.ecommerceddd.local/api/v2/signalr"
     }

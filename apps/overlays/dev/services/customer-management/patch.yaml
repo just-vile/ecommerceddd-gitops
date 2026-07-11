@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/just-vile/ecommerceddd-customer-management:main-latest
+          image: ghcr.io/just-vile/ecommerceddd-customer-management:t6.2
           env:
             - name: Services__IdentityServer
               value: http://ecommerceddd-identityserver-api
@@ -29,5 +29,3 @@ metadata:
 data:
   Service__Name: customer-management
   ConnectionStrings__DefaultConnection: Host=postgres.platform.svc.cluster.local;Port=5432;Database=customersdb;Username=postgres;Password=postgres
- 
- 
