@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/just-vile/ecommerceddd-shipment-processing:t7.1
+          image: ghcr.io/just-vile/ecommerceddd-shipment-processing:cn.1
           env:
             - name: TokenIssuerSettings__Scope
               value: ecommerceddd-api.scope read write delete

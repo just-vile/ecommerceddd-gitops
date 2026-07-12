@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/just-vile/ecommerceddd-customer-management:t7.1
+          image: ghcr.io/just-vile/ecommerceddd-customer-management:cn.1
           env:
             - name: Services__IdentityServer
               value: http://ecommerceddd-identityserver-api

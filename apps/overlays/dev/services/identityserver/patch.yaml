@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/just-vile/ecommerceddd-identityserver:t7.1
+          image: ghcr.io/just-vile/ecommerceddd-identityserver:cn.1
           env:
             - name: TokenIssuerSettings__ClientId
               value: ecommerceddd.user_client

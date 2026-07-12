@@ -55,7 +55,7 @@ spec:
             - name: VALUE_CONVERTER_SCHEMAS_ENABLE
               value: "false"
             - name: CONNECT_REST_ADVERTISED_HOST_NAME
-              value: connect
+              value: "127.0.0.1"
             - name: CONNECT_PLUGIN_PATH
               value: /kafka/connect,/debezium-connector
           readinessProbe:

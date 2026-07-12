@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/just-vile/ecommerceddd-apigateway:t7.1
+          image: ghcr.io/just-vile/ecommerceddd-apigateway:cn.1
           env:
             - name: Cors__AllowedOrigins__0
               value: http://app.dev.ecommerceddd.local
