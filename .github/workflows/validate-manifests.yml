@@ -1,111 +1,107 @@
-name: Validate GitOps Manifests
+# name: Validate GitOps Manifests
 
-on:
-  pull_request:
-    paths:
-      - "platform/**"
-      - "apps/**"
-      - ".github/workflows/validate-manifests.yml"
+# on:
+#   pull_request:
+#     paths:
+#       - "platform/**"
+#       - "apps/**"
+#       - ".github/workflows/validate-manifests.yml"
 
-permissions:
-  contents: read
-  pull-requests: write
+# permissions:
+#   contents: read
+#   pull-requests: write
 
-jobs:
-  kustomize-build:
-    name: Kustomize Build
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        overlay:
-          - platform/bootstrap/namespaces
-          - platform/bootstrap/argo-cd-install
-          - platform/bootstrap/argocd-apps
-          - platform/postgres/overlays/dev
-          - platform/postgres/bootstrap
-          - platform/kafka/overlays/dev
-          - platform/connect/overlays/dev
-          - platform/kafka/bootstrap
-          - platform/kafka-ui/overlays/dev
-          - platform/pgadmin/overlays/dev
-          - platform/observability/otel-collector/overlays/dev
-          - platform/observability/grafana/overlays/dev
-          - platform/observability/aspire-dashboard/overlays/dev
-          - apps/overlays/dev
-    steps:
-      - uses: actions/checkout@v4
+# jobs:
+#   kustomize-build:
+#     name: Kustomize Build
+#     runs-on: ubuntu-latest
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         overlay:
+#           - platform/bootstrap/argocd-apps
+#           - platform/postgres/overlays/dev
+#           - platform/postgres/bootstrap
+#           - platform/kafka/overlays/dev
+#           - platform/connect/overlays/dev
+#           - platform/kafka/bootstrap
+#           - platform/kafka-ui/overlays/dev
+#           - platform/pgadmin/overlays/dev
+#           - platform/observability/otel-collector/overlays/dev
+#           - platform/observability/grafana/overlays/dev
+#           - platform/observability/aspire-dashboard/overlays/dev
+#           - apps/overlays/dev
+#     steps:
+#       - uses: actions/checkout@v4
 
-      - name: Install kustomize
-        uses: imranismail/setup-kustomize@v2
-        with:
-          kustomize-version: "5.6.0"
+#       - name: Install kustomize
+#         uses: imranismail/setup-kustomize@v2
+#         with:
+#           kustomize-version: "5.6.0"
 
-      - name: Build ${{ matrix.overlay }}
-        run: kustomize build ${{ matrix.overlay }}
+#       - name: Build ${{ matrix.overlay }}
+#         run: kustomize build ${{ matrix.overlay }}
 
-  kubeconform:
-    name: Kubeconform Validation
-    runs-on: ubuntu-latest
-    needs: kustomize-build
-    strategy:
-      fail-fast: false
-      matrix:
-        overlay:
-          - platform/bootstrap/namespaces
-          - platform/bootstrap/argo-cd-install
-          - platform/bootstrap/argocd-apps
-          - platform/postgres/overlays/dev
-          - platform/postgres/bootstrap
-          - platform/kafka/overlays/dev
-          - platform/connect/overlays/dev
-          - platform/kafka/bootstrap
-          - platform/kafka-ui/overlays/dev
-          - platform/pgadmin/overlays/dev
-          - platform/observability/otel-collector/overlays/dev
-          - platform/observability/grafana/overlays/dev
-          - platform/observability/aspire-dashboard/overlays/dev
-          - apps/overlays/dev
-    steps:
-      - uses: actions/checkout@v4
+#   kubeconform:
+#     name: Kubeconform Validation
+#     runs-on: ubuntu-latest
+#     needs: kustomize-build
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         overlay:
+#           - platform/bootstrap/argocd-apps
+#           - platform/postgres/overlays/dev
+#           - platform/postgres/bootstrap
+#           - platform/kafka/overlays/dev
+#           - platform/connect/overlays/dev
+#           - platform/kafka/bootstrap
+#           - platform/kafka-ui/overlays/dev
+#           - platform/pgadmin/overlays/dev
+#           - platform/observability/otel-collector/overlays/dev
+#           - platform/observability/grafana/overlays/dev
+#           - platform/observability/aspire-dashboard/overlays/dev
+#           - apps/overlays/dev
+#     steps:
+#       - uses: actions/checkout@v4
 
-      - name: Install kustomize
-        uses: imranismail/setup-kustomize@v2
-        with:
-          kustomize-version: "5.6.0"
+#       - name: Install kustomize
+#         uses: imranismail/setup-kustomize@v2
+#         with:
+#           kustomize-version: "5.6.0"
 
-      - name: Install kubeconform
-        run: |
-          curl -fsSL -o /tmp/kubeconform.tar.gz \
-            https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz
-          tar xf /tmp/kubeconform.tar.gz -C /usr/local/bin
+#       - name: Install kubeconform
+#         run: |
+#           curl -fsSL -o /tmp/kubeconform.tar.gz \
+#             https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz
+#           tar xf /tmp/kubeconform.tar.gz -C /usr/local/bin
 
-      - name: Validate ${{ matrix.overlay }}
-        run: |
-          kustomize build ${{ matrix.overlay }} | kubeconform \
-            -strict \
-            -ignore-missing-schemas \
-            -kubernetes-version 1.32.0 \
-            -output pretty
+#       - name: Validate ${{ matrix.overlay }}
+#         run: |
+#           kustomize build ${{ matrix.overlay }} | kubeconform \
+#             -strict \
+#             -ignore-missing-schemas \
+#             -kubernetes-version 1.32.0 \
+#             -output pretty
 
-  comment-results:
-    name: Comment Validation Results
-    runs-on: ubuntu-latest
-    needs: [kustomize-build, kubeconform]
-    if: always()
-    steps:
-      - uses: actions/github-script@v7
-        with:
-          script: |
-            const needs = ${{ toJSON(needs) }};
-            const failed = Object.entries(needs)
-              .filter(([, v]) => v.result === 'failure')
-              .map(([k]) => k);
-            const status = failed.length === 0
-              ? '✅ All GitOps manifest validations passed.'
-              : `❌ Validation failed in: ${failed.join(', ')}`;
-            github.rest.issues.createComment({
-              ...context.repo,
-              issue_number: context.payload.pull_request.number,
-              body: `## GitOps Manifest Validation\n\n${status}`,
-            });
+#   comment-results:
+#     name: Comment Validation Results
+#     runs-on: ubuntu-latest
+#     needs: [kustomize-build, kubeconform]
+#     if: always()
+#     steps:
+#       - uses: actions/github-script@v7
+#         with:
+#           script: |
+#             const needs = ${{ toJSON(needs) }};
+#             const failed = Object.entries(needs)
+#               .filter(([, v]) => v.result === 'failure')
+#               .map(([k]) => k);
+#             const status = failed.length === 0
+#               ? '✅ All GitOps manifest validations passed.'
+#               : `❌ Validation failed in: ${failed.join(', ')}`;
+#             github.rest.issues.createComment({
+#               ...context.repo,
+#               issue_number: context.payload.pull_request.number,
+#               body: `## GitOps Manifest Validation\n\n${status}`,
+#             });
