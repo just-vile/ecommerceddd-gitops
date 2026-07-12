@@ -1,9 +1,10 @@
-name: Validate Platform Manifests
+name: Validate GitOps Manifests
 
 on:
   pull_request:
     paths:
       - "platform/**"
+      - "apps/**"
       - ".github/workflows/validate-manifests.yml"
 
 permissions:
@@ -11,40 +12,6 @@ permissions:
   pull-requests: write
 
 jobs:
-  helm-lint:
-    name: Helm Lint
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        component:
-          - { path: platform/ingress-nginx/base, type: helm }
-          - { path: platform/cert-manager/base, type: helm }
-          - { path: platform/sealed-secrets/base, type: helm }
-          - { path: platform/cnpg/operator, type: helm }
-          - { path: platform/observability/prometheus/base, type: helm }
-          - { path: platform/observability/grafana/base, type: helm }
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Helm
-        uses: azure/setup-helm@v4
-        with:
-          version: "v3.17.0"
-
-      - name: Add Helm repos
-        run: |
-          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-          helm repo add jetstack https://charts.jetstack.io
-          helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
-          helm repo add cnpg https://cloudnative-pg.github.io/charts
-          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-          helm repo add grafana https://grafana.github.io/helm-charts
-          helm repo update
-
-      - name: Helm lint ${{ matrix.component.path }}
-        run: helm lint ${{ matrix.component.path }} || true
-
   kustomize-build:
     name: Kustomize Build
     runs-on: ubuntu-latest
@@ -52,18 +19,20 @@ jobs:
       fail-fast: false
       matrix:
         overlay:
-          - platform/ingress-nginx/overlays/dev
-          - platform/cert-manager/issuers/dev-selfsigned
-          - platform/cnpg/clusters/dev
-          - platform/cnpg/bootstrap
+          - platform/bootstrap/namespaces
+          - platform/bootstrap/argo-cd-install
+          - platform/bootstrap/argocd-apps
+          - platform/postgres/overlays/dev
+          - platform/postgres/bootstrap
           - platform/kafka/overlays/dev
           - platform/connect/overlays/dev
           - platform/kafka/bootstrap
+          - platform/kafka-ui/overlays/dev
+          - platform/pgadmin/overlays/dev
           - platform/observability/otel-collector/overlays/dev
-          - platform/observability/prometheus/overlays/dev
           - platform/observability/grafana/overlays/dev
-          - platform/policies
-          - platform/projects
+          - platform/observability/aspire-dashboard/overlays/dev
+          - apps/overlays/dev
     steps:
       - uses: actions/checkout@v4
 
@@ -83,14 +52,20 @@ jobs:
       fail-fast: false
       matrix:
         overlay:
-          - platform/cnpg/clusters/dev
-          - platform/cnpg/bootstrap
+          - platform/bootstrap/namespaces
+          - platform/bootstrap/argo-cd-install
+          - platform/bootstrap/argocd-apps
+          - platform/postgres/overlays/dev
+          - platform/postgres/bootstrap
           - platform/kafka/overlays/dev
           - platform/connect/overlays/dev
           - platform/kafka/bootstrap
+          - platform/kafka-ui/overlays/dev
+          - platform/pgadmin/overlays/dev
           - platform/observability/otel-collector/overlays/dev
-          - platform/policies
-          - platform/projects
+          - platform/observability/grafana/overlays/dev
+          - platform/observability/aspire-dashboard/overlays/dev
+          - apps/overlays/dev
     steps:
       - uses: actions/checkout@v4
 
@@ -116,7 +91,7 @@ jobs:
   comment-results:
     name: Comment Validation Results
     runs-on: ubuntu-latest
-    needs: [helm-lint, kustomize-build, kubeconform]
+    needs: [kustomize-build, kubeconform]
     if: always()
     steps:
       - uses: actions/github-script@v7
@@ -127,10 +102,10 @@ jobs:
               .filter(([, v]) => v.result === 'failure')
               .map(([k]) => k);
             const status = failed.length === 0
-              ? '✅ All platform manifest validations passed.'
+              ? '✅ All GitOps manifest validations passed.'
               : `❌ Validation failed in: ${failed.join(', ')}`;
             github.rest.issues.createComment({
               ...context.repo,
               issue_number: context.payload.pull_request.number,
-              body: `## Platform Manifest Validation\n\n${status}`,
+              body: `## GitOps Manifest Validation\n\n${status}`,
             });

@@ -1,4 +1,4 @@
-name: Platform Policy Checks
+name: GitOps Policy Checks
 
 on:
   pull_request:
@@ -33,22 +33,31 @@ jobs:
         run: |
           mkdir -p /tmp/rendered
           for overlay in \
-            platform/cnpg/clusters/dev \
+            platform/postgres/overlays/dev \
+            platform/postgres/bootstrap \
             platform/kafka/overlays/dev \
             platform/connect/overlays/dev \
             platform/kafka/bootstrap \
+            platform/kafka-ui/overlays/dev \
+            platform/pgadmin/overlays/dev \
             platform/observability/otel-collector/overlays/dev \
-            platform/policies; do
+            platform/observability/grafana/overlays/dev \
+            platform/observability/aspire-dashboard/overlays/dev \
+            apps/overlays/dev; do
             kustomize build "$overlay" >> /tmp/rendered/all.yaml
             echo "---" >> /tmp/rendered/all.yaml
           done
 
       - name: Run conftest
         run: |
+          if [ ! -d scripts/policies ]; then
+            echo "No policies found at scripts/policies; skipping conftest."
+            exit 0
+          fi
           conftest test /tmp/rendered/all.yaml \
             --policy scripts/policies \
             --output table \
-            --all-namespaces || true
+            --all-namespaces
 
   no-latest-tag-check:
     name: No Latest Tag in Manifests
@@ -56,12 +65,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check for 'latest' image tags in platform manifests
+      - name: Check for 'latest' image tags in platform and apps manifests
         run: |
           # Search for image: <name>:latest patterns (excluding comments)
-          FOUND=$(grep -rn --include="*.yaml" 'image:.*:latest' platform/ || true)
+          FOUND=$(grep -rn --include="*.yaml" 'image:.*:latest' platform/ apps/ || true)
           if [ -n "$FOUND" ]; then
-            echo "ERROR: 'latest' image tag found in platform manifests:"
+            echo "ERROR: 'latest' image tag found in platform/apps manifests:"
             echo "$FOUND"
             exit 1
           fi
@@ -73,12 +82,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check Kafka and CNPG CRs have sync-wave annotations
+      - name: Check Argo apps and bootstrap resources have sync-wave annotations
         run: |
           MISSING=$(grep -rL 'argocd.argoproj.io/sync-wave' \
-            platform/cnpg/clusters/ \
-            platform/kafka/base/ \
-            platform/connect/base/ \
+            platform/bootstrap/argocd-apps/ \
+            platform/postgres/bootstrap/ \
+            platform/kafka/bootstrap/ \
             2>/dev/null || true)
           if [ -n "$MISSING" ]; then
             echo "WARNING: sync-wave annotation missing in:"
