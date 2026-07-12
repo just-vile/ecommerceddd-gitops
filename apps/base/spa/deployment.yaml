@@ -23,7 +23,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: spa
-          image: ghcr.io/just-vile/SERVICE:cn.1
+          image: ghcr.io/just-vile/SERVICE:cn.2
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false

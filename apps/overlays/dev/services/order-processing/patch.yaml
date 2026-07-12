@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/just-vile/ecommerceddd-order-processing:cn.1
+          image: ghcr.io/just-vile/ecommerceddd-order-processing:cn.2
           env:
             - name: Services__QuoteManagement
               value: http://ecommerceddd-quote-management-api
