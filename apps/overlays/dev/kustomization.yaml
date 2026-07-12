@@ -51,7 +51,7 @@ images:
   newTag: cn.2
 - name: ghcr.io/just-vile/ecommerceddd-spa
   newName: ghcr.io/just-vile/ecommerceddd-spa
-  newTag: sha-f7165f0
+  newTag: sha-2d23535
 
 commonAnnotations:
   ecommerceddd.io/gitops-sha: $Format:%H$
