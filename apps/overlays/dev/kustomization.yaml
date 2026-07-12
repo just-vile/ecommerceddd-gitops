@@ -4,51 +4,52 @@ kind: Kustomization
 namespace: ecom-dev
 
 resources:
-  - common/env-config.yaml
-  - services/customer-management
-  - services/product-catalog
-  - services/inventory-management
-  - services/quote-management
-  - services/order-processing
-  - services/payment-processing
-  - services/shipment-processing
-  - services/identityserver
-  - services/apigateway
-  - services/signalr
-  - services/spa
-  - ingress/apigateway-ingress.yaml
-  - ingress/identityserver-ingress.yaml
-  - ingress/signalr-ingress.yaml
-  - ingress/spa-ingress.yaml
+- common/env-config.yaml
+- services/customer-management
+- services/product-catalog
+- services/inventory-management
+- services/quote-management
+- services/order-processing
+- services/payment-processing
+- services/shipment-processing
+- services/identityserver
+- services/apigateway
+- services/signalr
+- services/spa
+- ingress/apigateway-ingress.yaml
+- ingress/identityserver-ingress.yaml
+- ingress/signalr-ingress.yaml
+- ingress/spa-ingress.yaml
 
 images:
-  - name: ghcr.io/just-vile/ecommerceddd-customer-management
-    newTag: cn.2
-  - name: ghcr.io/just-vile/ecommerceddd-product-catalog
-    newTag: cn.2
-  - name: ghcr.io/just-vile/ecommerceddd-inventory-management
-    newTag: cn.2
-  - name: ghcr.io/just-vile/ecommerceddd-quote-management
-    newTag: cn.2
-  - name: ghcr.io/just-vile/ecommerceddd-order-processing
-    newTag: cn.2
-  - name: ghcr.io/just-vile/ecommerceddd-payment-processing
-    newTag: cn.2
-  - name: ghcr.io/just-vile/ecommerceddd-shipment-processing
-    newTag: cn.2
-  - name: ghcr.io/just-vile/ecommerceddd-identityserver
-    newTag: cn.2
-  - name: ghcr.io/just-vile/ecommerceddd-apigateway
-    newTag: cn.2
-  - name: ghcr.io/just-vile/ecommerceddd-signalr
-    newTag: cn.2
-  - name: ghcr.io/just-vile/ecommerceddd-spa
-    newTag: cn.2
+- name: ghcr.io/just-vile/ecommerceddd-apigateway
+  newTag: cn.2
+- name: ghcr.io/just-vile/ecommerceddd-customer-management
+  newTag: cn.2
+- name: ghcr.io/just-vile/ecommerceddd-identityserver
+  newTag: cn.2
+- name: ghcr.io/just-vile/ecommerceddd-inventory-management
+  newTag: cn.2
+- name: ghcr.io/just-vile/ecommerceddd-order-processing
+  newTag: cn.2
+- name: ghcr.io/just-vile/ecommerceddd-payment-processing
+  newTag: cn.2
+- name: ghcr.io/just-vile/ecommerceddd-product-catalog
+  newTag: cn.2
+- name: ghcr.io/just-vile/ecommerceddd-quote-management
+  newTag: cn.2
+- name: ghcr.io/just-vile/ecommerceddd-shipment-processing
+  newTag: cn.2
+- name: ghcr.io/just-vile/ecommerceddd-signalr
+  newTag: cn.2
+- name: ghcr.io/just-vile/ecommerceddd-spa
+  newName: ghcr.io/just-vile/ecommerceddd-spa
+  newTag: sha-91b7030
 
 commonAnnotations:
-  ecommerceddd.io/gitops-sha: "$Format:%H$"
+  ecommerceddd.io/gitops-sha: $Format:%H$
 
 patches:
-  - path: common/image-pull-secret-patch.yaml
-    target:
-      kind: Deployment
+- path: common/image-pull-secret-patch.yaml
+  target:
+    kind: Deployment
