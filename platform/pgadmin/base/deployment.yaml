@@ -32,7 +32,7 @@ spec:
       containers:
         - name: pgadmin
           # Pin tag before production; 'latest' is acceptable for local dev only
-          image: dpage/pgadmin4:latest
+          image: dpage/pgadmin4:9.16
           env:
             - name: PGADMIN_DEFAULT_EMAIL
               valueFrom:
