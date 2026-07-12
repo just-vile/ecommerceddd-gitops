@@ -26,32 +26,32 @@ images:
   newTag: cn.2
 - name: ghcr.io/just-vile/ecommerceddd-customer-management
   newName: ghcr.io/just-vile/ecommerceddd-customer-management
-  newTag: sha-701441c
+  newTag: sha-a60442b
 - name: ghcr.io/just-vile/ecommerceddd-identityserver
   newTag: cn.2
 - name: ghcr.io/just-vile/ecommerceddd-inventory-management
   newName: ghcr.io/just-vile/ecommerceddd-inventory-management
-  newTag: sha-701441c
+  newTag: sha-a60442b
 - name: ghcr.io/just-vile/ecommerceddd-order-processing
   newName: ghcr.io/just-vile/ecommerceddd-order-processing
-  newTag: sha-701441c
+  newTag: sha-a60442b
 - name: ghcr.io/just-vile/ecommerceddd-payment-processing
   newName: ghcr.io/just-vile/ecommerceddd-payment-processing
-  newTag: sha-701441c
+  newTag: sha-a60442b
 - name: ghcr.io/just-vile/ecommerceddd-product-catalog
   newName: ghcr.io/just-vile/ecommerceddd-product-catalog
-  newTag: sha-701441c
+  newTag: sha-a60442b
 - name: ghcr.io/just-vile/ecommerceddd-quote-management
   newName: ghcr.io/just-vile/ecommerceddd-quote-management
-  newTag: sha-701441c
+  newTag: sha-a60442b
 - name: ghcr.io/just-vile/ecommerceddd-shipment-processing
   newName: ghcr.io/just-vile/ecommerceddd-shipment-processing
-  newTag: sha-701441c
+  newTag: sha-a60442b
 - name: ghcr.io/just-vile/ecommerceddd-signalr
   newTag: cn.2
 - name: ghcr.io/just-vile/ecommerceddd-spa
   newName: ghcr.io/just-vile/ecommerceddd-spa
-  newTag: sha-2d23535
+  newTag: sha-a60442b
 
 commonAnnotations:
   ecommerceddd.io/gitops-sha: $Format:%H$
